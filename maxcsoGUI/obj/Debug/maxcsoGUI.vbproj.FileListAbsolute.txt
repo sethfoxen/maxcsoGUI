@@ -1,0 +1,29 @@
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\bin\Debug\maxcsoGUI.exe.config
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\bin\Debug\maxcsoGUI.exe
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\bin\Debug\maxcsoGUI.pdb
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\bin\Debug\maxcsoGUI.xml
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.vbprojAssemblyReference.cache
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.AboutBox1.resources
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.Resources.resources
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.GenerateResource.cache
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.CoreCompileInputs.cache
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.exe
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.xml
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.pdb
+C:\Users\Seth Foxen\AppData\Local\Temporary Projects\maxcsoGUI\obj\Debug\maxcsoGUI.Form1.resources
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.exe.config
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.exe.manifest
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.application
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.exe
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.pdb
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.xml
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.AboutBox1.resources
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.maxcsoGUI.resources
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.Resources.resources
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.GenerateResource.cache
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.CoreCompileInputs.cache
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.exe.manifest
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.application
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.exe
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.xml
+C:\Users\Seth Foxen\source\repos\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.pdb

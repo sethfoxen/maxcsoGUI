@@ -11,19 +11,40 @@
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Convert.Click
-        If IsNumeric(ThreadSelection.SelectedItem) = True Then
-            Do
-                Dim NextSelec As String = FileList.Items(0).ToString
-                Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "cso" & Chr(34))
-                Dim Thread As Process = Process.Start(maxcso)
-                Thread.WaitForExit()
-                FileList.Items.RemoveAt(0)
-            Loop Until FileList.Items.Count = 0
-            MessageBox.Show("Conversion Completed!")
+        'Check the maxcso binary has been placed correctly
+        If My.Computer.FileSystem.FileExists("maxcso.exe") Then
+            'Make sure the thread selection has be chosen
+            If IsNumeric(ThreadSelection.SelectedItem) = True Then
+                'Loop through the file list
+                Do
+                    'Store the first item in the list
+                    Dim NextSelec As String = FileList.Items(0).ToString
+                    'Store the selected options as a string
+                    Dim arg As String = ""
+                    If Fast.Checked = True Then arg = arg & " --fast"
+                    If Zopfli.Checked = True Then arg = arg & " --use-zopfli"
+                    If BlockSize.Checked = True Then arg = arg & " --block=" & BlockText.Text
+                    'Store the process command with arguments
+                    Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "cso" & Chr(34))
+                    'Start to the maxcso process
+                    Dim Thread As Process = Process.Start(maxcso)
+                    'Wait until the file finishes processing before moving on
+                    Thread.WaitForExit()
+                    'Delete original files, if applicable
+                    If DeleteCheck.Checked = True Then
+                        'Delete the first item in the list off the PC
+                        My.Computer.FileSystem.DeleteFile(NextSelec, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+                    End If
+                    'Remove the first item from the list
+                    FileList.Items.RemoveAt(0)
+                Loop Until FileList.Items.Count = 0
+                MessageBox.Show("Conversion Completed!")
+            Else
+                MessageBox.Show("Please select how many threads to run.")
+            End If
         Else
-            MessageBox.Show("Please select how many threads to run.")
-        End If
-
+            MessageBox.Show("I can't find the maxcso binary, was it placed side by side with this executable?")
+         End If
     End Sub
 
     Private Sub ToolTip1_Popup(sender As Object, e As PopupEventArgs)
@@ -56,5 +77,34 @@
 
     Private Sub DropHelp_Click(sender As Object, e As EventArgs) Handles DropHelp.Click
 
+    End Sub
+
+    Private Sub Fast_CheckedChanged(sender As Object, e As EventArgs) Handles Fast.CheckedChanged
+        'Enable/Disable the Zopfli check box if the Fast Mode box is unchecked/checked
+        If Fast.Checked = True Then
+            Zopfli.Enabled = False
+        End If
+        If Fast.Checked = False Then
+            Zopfli.Enabled = True
+        End If
+    End Sub
+
+    Private Sub BlockSize_CheckedChanged(sender As Object, e As EventArgs) Handles BlockSize.CheckedChanged
+        'Enable the Block Size text box when needed
+        If BlockSize.Checked = True Then
+            BlockText.Enabled = True
+        ElseIf BlockSize.Checked = False Then
+            BlockText.Enabled = False
+        End If
+    End Sub
+
+    Private Sub Zopfli_CheckedChanged(sender As Object, e As EventArgs) Handles Zopfli.CheckedChanged
+        'Enable/Disable the Fast Mode check box if the Zopfli box is unchecked/checked
+        If Zopfli.Checked = True Then
+            Fast.Enabled = False
+        End If
+        If Zopfli.Checked = False Then
+            Fast.Enabled = True
+        End If
     End Sub
 End Class

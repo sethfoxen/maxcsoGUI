@@ -27,4 +27,8 @@
     Private Sub Email_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles Email.LinkClicked
         System.Diagnostics.Process.Start("mailto:" & "sethfoxen@gmail.com")
     End Sub
+
+    Private Sub LabelVersion_Click(sender As Object, e As EventArgs) Handles LabelVersion.Click
+
+    End Sub
 End Class

@@ -25,17 +25,17 @@ Partial Class maxcsoGUI
         Me.components = New System.ComponentModel.Container()
         Me.About = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.Note = New System.Windows.Forms.Label()
+        Me.BlockText = New System.Windows.Forms.TextBox()
+        Me.BlockSize = New System.Windows.Forms.CheckBox()
+        Me.DeleteCheck = New System.Windows.Forms.CheckBox()
+        Me.Zopfli = New System.Windows.Forms.CheckBox()
+        Me.Fast = New System.Windows.Forms.CheckBox()
         Me.ThreadSelection = New System.Windows.Forms.ComboBox()
         Me.FileList = New System.Windows.Forms.ListBox()
         Me.DropHelp = New System.Windows.Forms.Label()
         Me.Convert = New System.Windows.Forms.Button()
-        Me.Zopfli = New System.Windows.Forms.CheckBox()
-        Me.Fast = New System.Windows.Forms.CheckBox()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.DeleteCheck = New System.Windows.Forms.CheckBox()
-        Me.BlockSize = New System.Windows.Forms.CheckBox()
-        Me.BlockText = New System.Windows.Forms.TextBox()
+        Me.Decompress = New System.Windows.Forms.CheckBox()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -50,28 +50,75 @@ Partial Class maxcsoGUI
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.Decompress)
         Me.GroupBox1.Controls.Add(Me.BlockText)
         Me.GroupBox1.Controls.Add(Me.BlockSize)
         Me.GroupBox1.Controls.Add(Me.DeleteCheck)
         Me.GroupBox1.Controls.Add(Me.Zopfli)
         Me.GroupBox1.Controls.Add(Me.Fast)
-        Me.GroupBox1.Controls.Add(Me.Note)
         Me.GroupBox1.Controls.Add(Me.ThreadSelection)
         Me.GroupBox1.Location = New System.Drawing.Point(299, 0)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(265, 103)
+        Me.GroupBox1.Size = New System.Drawing.Size(265, 102)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Options"
         '
-        'Note
+        'BlockText
         '
-        Me.Note.AutoSize = True
-        Me.Note.Location = New System.Drawing.Point(142, 87)
-        Me.Note.Name = "Note"
-        Me.Note.Size = New System.Drawing.Size(109, 13)
-        Me.Note.TabIndex = 4
-        Me.Note.Text = "Surely more to come?"
+        Me.BlockText.Enabled = False
+        Me.BlockText.Location = New System.Drawing.Point(7, 70)
+        Me.BlockText.Name = "BlockText"
+        Me.BlockText.Size = New System.Drawing.Size(100, 20)
+        Me.BlockText.TabIndex = 9
+        Me.BlockText.Text = "2048"
+        '
+        'BlockSize
+        '
+        Me.BlockSize.AutoSize = True
+        Me.BlockSize.Location = New System.Drawing.Point(10, 46)
+        Me.BlockSize.Name = "BlockSize"
+        Me.BlockSize.Size = New System.Drawing.Size(91, 17)
+        Me.BlockSize.TabIndex = 8
+        Me.BlockSize.Text = "Alt Block Size"
+        Me.ToolTip1.SetToolTip(Me.BlockSize, "Specify a block size (default depends on iso size)" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Many readers only support the" &
+        " 2048 size" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(DON'T CHECK UNLESS YOU KNOW WHAT YOU'RE DOING)")
+        Me.BlockSize.UseVisualStyleBackColor = True
+        '
+        'DeleteCheck
+        '
+        Me.DeleteCheck.AutoSize = True
+        Me.DeleteCheck.Location = New System.Drawing.Point(137, 58)
+        Me.DeleteCheck.Name = "DeleteCheck"
+        Me.DeleteCheck.Size = New System.Drawing.Size(119, 17)
+        Me.DeleteCheck.TabIndex = 7
+        Me.DeleteCheck.Text = "Delete Original Files"
+        Me.ToolTip1.SetToolTip(Me.DeleteCheck, "Check to delete the original ISO files after they've been converted." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(BE CAREFUL" &
+        "!! EVEN IF A FILE FAILS TO CONVERT, THE ORIGINAL WILL STILL BE DELETED!!)")
+        Me.DeleteCheck.UseVisualStyleBackColor = True
+        '
+        'Zopfli
+        '
+        Me.Zopfli.AutoSize = True
+        Me.Zopfli.Location = New System.Drawing.Point(137, 35)
+        Me.Zopfli.Name = "Zopfli"
+        Me.Zopfli.Size = New System.Drawing.Size(88, 17)
+        Me.Zopfli.TabIndex = 6
+        Me.Zopfli.Text = "Enable Zopfli"
+        Me.ToolTip1.SetToolTip(Me.Zopfli, "Enable trials with Zopfli for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Significantly slower, uses m" &
+        "ore memory, marginally smaller files.)")
+        Me.Zopfli.UseVisualStyleBackColor = True
+        '
+        'Fast
+        '
+        Me.Fast.AutoSize = True
+        Me.Fast.Location = New System.Drawing.Point(137, 12)
+        Me.Fast.Name = "Fast"
+        Me.Fast.Size = New System.Drawing.Size(76, 17)
+        Me.Fast.TabIndex = 5
+        Me.Fast.Text = "Fast Mode"
+        Me.ToolTip1.SetToolTip(Me.Fast, "Use only basic zlib or lz4 for fastest result." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Will result in bigger files.)")
+        Me.Fast.UseVisualStyleBackColor = True
         '
         'ThreadSelection
         '
@@ -97,9 +144,9 @@ Partial Class maxcsoGUI
         '
         'DropHelp
         '
-        Me.DropHelp.Location = New System.Drawing.Point(298, 106)
+        Me.DropHelp.Location = New System.Drawing.Point(298, 116)
         Me.DropHelp.Name = "DropHelp"
-        Me.DropHelp.Size = New System.Drawing.Size(256, 34)
+        Me.DropHelp.Size = New System.Drawing.Size(256, 24)
         Me.DropHelp.TabIndex = 5
         Me.DropHelp.Text = "Drag and drop ISO files to this box, the CSO files will be produced in the same d" &
     "irectory as the ISO."
@@ -107,73 +154,28 @@ Partial Class maxcsoGUI
         '
         'Convert
         '
-        Me.Convert.Location = New System.Drawing.Point(298, 143)
+        Me.Convert.Location = New System.Drawing.Point(408, 143)
         Me.Convert.Name = "Convert"
         Me.Convert.Size = New System.Drawing.Size(75, 23)
         Me.Convert.TabIndex = 3
         Me.Convert.Text = "Convert"
         Me.Convert.UseVisualStyleBackColor = True
         '
-        'Zopfli
-        '
-        Me.Zopfli.AutoSize = True
-        Me.Zopfli.Location = New System.Drawing.Point(137, 35)
-        Me.Zopfli.Name = "Zopfli"
-        Me.Zopfli.Size = New System.Drawing.Size(88, 17)
-        Me.Zopfli.TabIndex = 6
-        Me.Zopfli.Text = "Enable Zopfli"
-        Me.ToolTip1.SetToolTip(Me.Zopfli, "Enable trials with Zopfli for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Significantly slower, uses m" &
-        "ore memory, marginally smaller files.)")
-        Me.Zopfli.UseVisualStyleBackColor = True
-        '
-        'Fast
-        '
-        Me.Fast.AutoSize = True
-        Me.Fast.Location = New System.Drawing.Point(137, 12)
-        Me.Fast.Name = "Fast"
-        Me.Fast.Size = New System.Drawing.Size(76, 17)
-        Me.Fast.TabIndex = 5
-        Me.Fast.Text = "Fast Mode"
-        Me.ToolTip1.SetToolTip(Me.Fast, "Use only basic zlib or lz4 for fastest result." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Will result in bigger files.)")
-        Me.Fast.UseVisualStyleBackColor = True
-        '
         'ToolTip1
         '
         Me.ToolTip1.AutomaticDelay = 0
         Me.ToolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info
         '
-        'DeleteCheck
+        'Decompress
         '
-        Me.DeleteCheck.AutoSize = True
-        Me.DeleteCheck.Location = New System.Drawing.Point(137, 58)
-        Me.DeleteCheck.Name = "DeleteCheck"
-        Me.DeleteCheck.Size = New System.Drawing.Size(119, 17)
-        Me.DeleteCheck.TabIndex = 7
-        Me.DeleteCheck.Text = "Delete Original Files"
-        Me.ToolTip1.SetToolTip(Me.DeleteCheck, "Check to delete the original ISO files after they've been converted." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(BE CAREFUL" &
-        "!! EVEN IF A FILE FAILS TO CONVERT, THE ORIGINAL WILL STILL BE DELETED!!)")
-        Me.DeleteCheck.UseVisualStyleBackColor = True
-        '
-        'BlockSize
-        '
-        Me.BlockSize.AutoSize = True
-        Me.BlockSize.Location = New System.Drawing.Point(10, 46)
-        Me.BlockSize.Name = "BlockSize"
-        Me.BlockSize.Size = New System.Drawing.Size(91, 17)
-        Me.BlockSize.TabIndex = 8
-        Me.BlockSize.Text = "Alt Block Size"
-        Me.ToolTip1.SetToolTip(Me.BlockSize, "Specify a block size (default depends on iso size)" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Many readers only support the" &
-        " 2048 size" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(DON'T CHECK UNLESS YOU KNOW WHAT YOU'RE DOING)")
-        Me.BlockSize.UseVisualStyleBackColor = True
-        '
-        'BlockText
-        '
-        Me.BlockText.Enabled = False
-        Me.BlockText.Location = New System.Drawing.Point(7, 70)
-        Me.BlockText.Name = "BlockText"
-        Me.BlockText.Size = New System.Drawing.Size(100, 20)
-        Me.BlockText.TabIndex = 9
-        Me.BlockText.Text = "2048"
+        Me.Decompress.AutoSize = True
+        Me.Decompress.Location = New System.Drawing.Point(137, 81)
+        Me.Decompress.Name = "Decompress"
+        Me.Decompress.Size = New System.Drawing.Size(85, 17)
+        Me.Decompress.TabIndex = 10
+        Me.Decompress.Text = "Decompress"
+        Me.ToolTip1.SetToolTip(Me.Decompress, "Write out to raw ISO, decompressing as needed")
+        Me.Decompress.UseVisualStyleBackColor = True
         '
         'maxcsoGUI
         '
@@ -199,7 +201,6 @@ Partial Class maxcsoGUI
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents ThreadSelection As ComboBox
     Friend WithEvents FileList As ListBox
-    Friend WithEvents Note As Label
     Friend WithEvents DropHelp As Label
     Friend WithEvents Convert As Button
     Friend WithEvents Zopfli As CheckBox
@@ -208,4 +209,5 @@ Partial Class maxcsoGUI
     Friend WithEvents DeleteCheck As CheckBox
     Friend WithEvents BlockText As TextBox
     Friend WithEvents BlockSize As CheckBox
+    Friend WithEvents Decompress As CheckBox
 End Class

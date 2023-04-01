@@ -4,7 +4,7 @@
   <description asmv2:publisher="maxcsoGUI" asmv2:product="maxcsoGUI" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <deployment install="true" mapFileExtensions="true" />
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
-    <framework targetVersion="4.6.1" profile="Full" supportedRuntime="4.0.30319" />
+    <framework targetVersion="4.8" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
     <dependentAssembly dependencyType="install" codebase="maxcsoGUI.exe.manifest" size="4423">
@@ -14,7 +14,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>m9p3W5qG850J+cRWeRkA4B/chQNGAJMmeb8Z3Ty76Jo=</dsig:DigestValue>
+        <dsig:DigestValue>Fdj+JQlgsBexZ/BXQa1trcm/TzW7Q4TuSUsAIOJsm2U=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

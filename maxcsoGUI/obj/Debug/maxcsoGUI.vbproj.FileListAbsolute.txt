@@ -43,3 +43,21 @@ C:\Users\Seth Foxen\Source\Repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoG
 C:\Users\Seth Foxen\Source\Repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.exe
 C:\Users\Seth Foxen\Source\Repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.xml
 C:\Users\Seth Foxen\Source\Repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.pdb
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.exe.config
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.exe.manifest
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.application
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.exe
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.pdb
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\bin\Debug\maxcsoGUI.xml
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.AssemblyReference.cache
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.SuggestedBindingRedirects.cache
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.AboutBox1.resources
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.maxcsoGUI.resources
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.Resources.resources
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.GenerateResource.cache
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.vbproj.CoreCompileInputs.cache
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.exe.manifest
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.application
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.exe
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.xml
+C:\Users\sethf\source\repos\sethfoxen\maxcsoGUI\maxcsoGUI\obj\Debug\maxcsoGUI.pdb

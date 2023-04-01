@@ -13,30 +13,53 @@
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Convert.Click
         'Check the maxcso binary has been placed correctly
         If My.Computer.FileSystem.FileExists("maxcso.exe") Then
-            'Make sure the thread selection has be chosen
+            'Make sure the thread selection has been chosen
             If IsNumeric(ThreadSelection.SelectedItem) = True Then
                 'Loop through the file list
                 Do
-                    'Store the first item in the list
-                    Dim NextSelec As String = FileList.Items(0).ToString
-                    'Store the selected options as a string
-                    Dim arg As String = ""
-                    If Fast.Checked = True Then arg = arg & " --fast"
-                    If Zopfli.Checked = True Then arg = arg & " --use-zopfli"
-                    If BlockSize.Checked = True Then arg = arg & " --block=" & BlockText.Text
-                    'Store the process command with arguments
-                    Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "cso" & Chr(34))
-                    'Start to the maxcso process
-                    Dim Thread As Process = Process.Start(maxcso)
-                    'Wait until the file finishes processing before moving on
-                    Thread.WaitForExit()
-                    'Delete original files, if applicable
-                    If DeleteCheck.Checked = True Then
-                        'Delete the first item in the list off the PC
-                        My.Computer.FileSystem.DeleteFile(NextSelec, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+                    If Decompress.Checked = False Then
+                        'Store the first item in the list
+                        Dim NextSelec As String = FileList.Items(0).ToString
+                        'Store the selected options as a string
+                        Dim arg As String = ""
+                        If Decompress.Checked = True Then arg = arg & " --decompress"
+                        If Fast.Checked = True Then arg = arg & " --fast"
+                        If Zopfli.Checked = True Then arg = arg & " --use-zopfli"
+                        If BlockSize.Checked = True Then arg = arg & " --block=" & BlockText.Text
+                        'Store the process command with arguments
+                        Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "cso" & Chr(34))
+                        'Start to the maxcso process
+                        Dim Thread As Process = Process.Start(maxcso)
+                        'Wait until the file finishes processing before moving on
+                        Thread.WaitForExit()
+                        'Delete original files, if applicable
+                        If DeleteCheck.Checked = True Then
+                            'Delete the first item in the list off the PC
+                            My.Computer.FileSystem.DeleteFile(NextSelec, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+                        End If
+                        'Remove the first item from the list
+                        FileList.Items.RemoveAt(0)
+                    Else
+                        'Store the first item in the list
+                        Dim NextSelec As String = FileList.Items(0).ToString
+                        'Store the selected options as a string
+                        Dim arg As String = ""
+                        If Decompress.Checked = True Then arg = arg & " --decompress"
+                        'Store the process command with arguments
+                        Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "iso" & Chr(34))
+                        'Start to the maxcso process
+                        Dim Thread As Process = Process.Start(maxcso)
+                        'Wait until the file finishes processing before moving on
+                        Thread.WaitForExit()
+                        'Delete original files, if applicable
+                        If DeleteCheck.Checked = True Then
+                            'Delete the first item in the list off the PC
+                            My.Computer.FileSystem.DeleteFile(NextSelec, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+                        End If
+                        'Remove the first item from the list
+                        FileList.Items.RemoveAt(0)
                     End If
-                    'Remove the first item from the list
-                    FileList.Items.RemoveAt(0)
+
                 Loop Until FileList.Items.Count = 0
                 MessageBox.Show("Conversion Completed!")
             Else
@@ -44,7 +67,7 @@
             End If
         Else
             MessageBox.Show("I can't find the maxcso binary, was it placed side by side with this executable?")
-         End If
+        End If
     End Sub
 
     Private Sub ToolTip1_Popup(sender As Object, e As PopupEventArgs)
@@ -106,5 +129,27 @@
         If Zopfli.Checked = False Then
             Fast.Enabled = True
         End If
+
+    End Sub
+    Private Sub Decompress_CheckedChanged(sender As Object, e As EventArgs) Handles Decompress.CheckedChanged
+        If Decompress.Checked = True Then
+            Fast.Enabled = False
+            Zopfli.Enabled = False
+            BlockText.Enabled = False
+            BlockSize.Enabled = False
+        Else
+            Fast.Enabled = True
+            Zopfli.Enabled = True
+            BlockText.Enabled = True
+            BlockSize.Enabled = True
+
+        End If
+    End Sub
+    Private Sub DeleteCheck_CheckedChanged(sender As Object, e As EventArgs) Handles DeleteCheck.CheckedChanged
+
+    End Sub
+
+    Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles Decompress.CheckedChanged
+
     End Sub
 End Class

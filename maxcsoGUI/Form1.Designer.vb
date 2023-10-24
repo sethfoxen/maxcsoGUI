@@ -25,6 +25,10 @@ Partial Class maxcsoGUI
         Me.components = New System.ComponentModel.Container()
         Me.About = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.CustOut = New System.Windows.Forms.TextBox()
+        Me.Browse = New System.Windows.Forms.Button()
+        Me.CustDir = New System.Windows.Forms.CheckBox()
+        Me.Decompress = New System.Windows.Forms.CheckBox()
         Me.BlockText = New System.Windows.Forms.TextBox()
         Me.BlockSize = New System.Windows.Forms.CheckBox()
         Me.DeleteCheck = New System.Windows.Forms.CheckBox()
@@ -35,13 +39,13 @@ Partial Class maxcsoGUI
         Me.DropHelp = New System.Windows.Forms.Label()
         Me.Convert = New System.Windows.Forms.Button()
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.Decompress = New System.Windows.Forms.CheckBox()
+        Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
         '
         'About
         '
-        Me.About.Location = New System.Drawing.Point(489, 143)
+        Me.About.Location = New System.Drawing.Point(299, 133)
         Me.About.Name = "About"
         Me.About.Size = New System.Drawing.Size(75, 23)
         Me.About.TabIndex = 0
@@ -50,6 +54,9 @@ Partial Class maxcsoGUI
         '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.CustOut)
+        Me.GroupBox1.Controls.Add(Me.Browse)
+        Me.GroupBox1.Controls.Add(Me.CustDir)
         Me.GroupBox1.Controls.Add(Me.Decompress)
         Me.GroupBox1.Controls.Add(Me.BlockText)
         Me.GroupBox1.Controls.Add(Me.BlockSize)
@@ -59,15 +66,54 @@ Partial Class maxcsoGUI
         Me.GroupBox1.Controls.Add(Me.ThreadSelection)
         Me.GroupBox1.Location = New System.Drawing.Point(299, 0)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(265, 102)
+        Me.GroupBox1.Size = New System.Drawing.Size(454, 102)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Options"
         '
+        'CustOut
+        '
+        Me.CustOut.Enabled = False
+        Me.CustOut.Location = New System.Drawing.Point(255, 41)
+        Me.CustOut.Name = "CustOut"
+        Me.CustOut.Size = New System.Drawing.Size(193, 20)
+        Me.CustOut.TabIndex = 13
+        '
+        'Browse
+        '
+        Me.Browse.Enabled = False
+        Me.Browse.Location = New System.Drawing.Point(373, 12)
+        Me.Browse.Name = "Browse"
+        Me.Browse.Size = New System.Drawing.Size(75, 23)
+        Me.Browse.TabIndex = 12
+        Me.Browse.Text = "Browse"
+        Me.Browse.UseVisualStyleBackColor = True
+        '
+        'CustDir
+        '
+        Me.CustDir.AutoSize = True
+        Me.CustDir.Location = New System.Drawing.Point(255, 18)
+        Me.CustDir.Name = "CustDir"
+        Me.CustDir.Size = New System.Drawing.Size(112, 17)
+        Me.CustDir.TabIndex = 11
+        Me.CustDir.Text = "Custom Output Dir"
+        Me.CustDir.UseVisualStyleBackColor = True
+        '
+        'Decompress
+        '
+        Me.Decompress.AutoSize = True
+        Me.Decompress.Location = New System.Drawing.Point(137, 71)
+        Me.Decompress.Name = "Decompress"
+        Me.Decompress.Size = New System.Drawing.Size(85, 17)
+        Me.Decompress.TabIndex = 10
+        Me.Decompress.Text = "Decompress"
+        Me.ToolTip1.SetToolTip(Me.Decompress, "Write out to raw ISO, decompressing as needed")
+        Me.Decompress.UseVisualStyleBackColor = True
+        '
         'BlockText
         '
         Me.BlockText.Enabled = False
-        Me.BlockText.Location = New System.Drawing.Point(7, 70)
+        Me.BlockText.Location = New System.Drawing.Point(10, 69)
         Me.BlockText.Name = "BlockText"
         Me.BlockText.Size = New System.Drawing.Size(100, 20)
         Me.BlockText.TabIndex = 9
@@ -88,7 +134,7 @@ Partial Class maxcsoGUI
         'DeleteCheck
         '
         Me.DeleteCheck.AutoSize = True
-        Me.DeleteCheck.Location = New System.Drawing.Point(137, 58)
+        Me.DeleteCheck.Location = New System.Drawing.Point(329, 79)
         Me.DeleteCheck.Name = "DeleteCheck"
         Me.DeleteCheck.Size = New System.Drawing.Size(119, 17)
         Me.DeleteCheck.TabIndex = 7
@@ -123,7 +169,6 @@ Partial Class maxcsoGUI
         'ThreadSelection
         '
         Me.ThreadSelection.FormattingEnabled = True
-        Me.ThreadSelection.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "6", "7", "8"})
         Me.ThreadSelection.Location = New System.Drawing.Point(10, 19)
         Me.ThreadSelection.Name = "ThreadSelection"
         Me.ThreadSelection.Size = New System.Drawing.Size(121, 21)
@@ -144,17 +189,17 @@ Partial Class maxcsoGUI
         '
         'DropHelp
         '
-        Me.DropHelp.Location = New System.Drawing.Point(298, 116)
+        Me.DropHelp.Location = New System.Drawing.Point(299, 105)
         Me.DropHelp.Name = "DropHelp"
-        Me.DropHelp.Size = New System.Drawing.Size(256, 24)
+        Me.DropHelp.Size = New System.Drawing.Size(448, 24)
         Me.DropHelp.TabIndex = 5
         Me.DropHelp.Text = "Drag and drop ISO files to this box, the CSO files will be produced in the same d" &
-    "irectory as the ISO."
+    "irectory as the ISO unless the Custom Output Dir box is checked."
         Me.DropHelp.UseCompatibleTextRendering = True
         '
         'Convert
         '
-        Me.Convert.Location = New System.Drawing.Point(408, 143)
+        Me.Convert.Location = New System.Drawing.Point(678, 135)
         Me.Convert.Name = "Convert"
         Me.Convert.Size = New System.Drawing.Size(75, 23)
         Me.Convert.TabIndex = 3
@@ -166,22 +211,11 @@ Partial Class maxcsoGUI
         Me.ToolTip1.AutomaticDelay = 0
         Me.ToolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info
         '
-        'Decompress
-        '
-        Me.Decompress.AutoSize = True
-        Me.Decompress.Location = New System.Drawing.Point(137, 81)
-        Me.Decompress.Name = "Decompress"
-        Me.Decompress.Size = New System.Drawing.Size(85, 17)
-        Me.Decompress.TabIndex = 10
-        Me.Decompress.Text = "Decompress"
-        Me.ToolTip1.SetToolTip(Me.Decompress, "Write out to raw ISO, decompressing as needed")
-        Me.Decompress.UseVisualStyleBackColor = True
-        '
         'maxcsoGUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(568, 170)
+        Me.ClientSize = New System.Drawing.Size(765, 170)
         Me.Controls.Add(Me.FileList)
         Me.Controls.Add(Me.DropHelp)
         Me.Controls.Add(Me.Convert)
@@ -210,4 +244,8 @@ Partial Class maxcsoGUI
     Friend WithEvents BlockText As TextBox
     Friend WithEvents BlockSize As CheckBox
     Friend WithEvents Decompress As CheckBox
+    Friend WithEvents CustDir As CheckBox
+    Friend WithEvents Browse As Button
+    Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
+    Friend WithEvents CustOut As TextBox
 End Class

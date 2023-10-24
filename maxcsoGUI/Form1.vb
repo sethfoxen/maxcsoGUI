@@ -1,6 +1,13 @@
-﻿Public Class maxcsoGUI
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+﻿Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
+Public Class maxcsoGUI
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Dim cores As Integer = (Environment.ProcessorCount)
+        Dim count As Integer
+        Do
+            count += 1
+            ThreadSelection.Items.Add(count)
+        Loop Until count = cores
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles About.Click
@@ -20,14 +27,19 @@
                     If Decompress.Checked = False Then
                         'Store the first item in the list
                         Dim NextSelec As String = FileList.Items(0).ToString
+                        'Find the file name
+                        Dim FileName As String = NextSelec.Substring(NextSelec.LastIndexOf("\"))
                         'Store the selected options as a string
                         Dim arg As String = ""
+                        Dim out As String = ""
                         If Decompress.Checked = True Then arg = arg & " --decompress"
                         If Fast.Checked = True Then arg = arg & " --fast"
                         If Zopfli.Checked = True Then arg = arg & " --use-zopfli"
                         If BlockSize.Checked = True Then arg = arg & " --block=" & BlockText.Text
+                        'Custom directory was a pain in my ass, god I hope I composed this string properly
+                        If CustDir.Checked = True Then out = Chr(34) & CustOut.Text & FileName.Substring(0, FileName.Length - 3) & "cso" & Chr(34) Else out = Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "cso" & Chr(34)
                         'Store the process command with arguments
-                        Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "cso" & Chr(34))
+                        Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & out)
                         'Start to the maxcso process
                         Dim Thread As Process = Process.Start(maxcso)
                         'Wait until the file finishes processing before moving on
@@ -42,11 +54,15 @@
                     Else
                         'Store the first item in the list
                         Dim NextSelec As String = FileList.Items(0).ToString
+                        'Find the file name
+                        Dim FileName As String = NextSelec.Substring(NextSelec.LastIndexOf("\"))
                         'Store the selected options as a string
                         Dim arg As String = ""
+                        Dim out As String = ""
                         If Decompress.Checked = True Then arg = arg & " --decompress"
+                        If CustDir.Checked = True Then out = Chr(34) & CustOut.Text & FileName.Substring(0, FileName.Length - 3) & "iso" & Chr(34) Else out = Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "iso" & Chr(34)
                         'Store the process command with arguments
-                        Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & Chr(34) & NextSelec.Substring(0, NextSelec.Length - 3) & "iso" & Chr(34))
+                        Dim maxcso As New ProcessStartInfo("maxcso.exe", " --threads=" & ThreadSelection.SelectedItem & " " & arg & " " & Chr(34) & NextSelec & Chr(34) & " -o " & out)
                         'Start to the maxcso process
                         Dim Thread As Process = Process.Start(maxcso)
                         'Wait until the file finishes processing before moving on
@@ -63,7 +79,7 @@
                 Loop Until FileList.Items.Count = 0
                 MessageBox.Show("Conversion Completed!")
             Else
-                MessageBox.Show("Please select how many threads to run.")
+                MessageBox.Show("Please Select how many threads To run.")
             End If
         Else
             MessageBox.Show("I can't find the maxcso binary, was it placed side by side with this executable?")
@@ -150,6 +166,29 @@
     End Sub
 
     Private Sub CheckBox1_CheckedChanged(sender As Object, e As EventArgs) Handles Decompress.CheckedChanged
+
+    End Sub
+
+    Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
+
+    End Sub
+
+    Private Sub CustDir_CheckedChanged(sender As Object, e As EventArgs) Handles CustDir.CheckedChanged
+        If CustDir.Checked = True Then
+            Browse.Enabled = True
+            CustOut.Enabled = True
+        Else
+            Browse.Enabled = False
+            CustOut.Enabled = False
+        End If
+    End Sub
+
+    Private Sub Browse_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Browse.Click
+        FolderBrowserDialog1.ShowDialog()
+        CustOut.Text = FolderBrowserDialog1.SelectedPath
+    End Sub
+
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles CustOut.TextChanged
 
     End Sub
 End Class

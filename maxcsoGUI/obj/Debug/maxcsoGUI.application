@@ -7,14 +7,14 @@
     <framework targetVersion="4.8" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="maxcsoGUI.exe.manifest" size="4423">
+    <dependentAssembly dependencyType="install" codebase="maxcsoGUI.exe.manifest" size="7107">
       <assemblyIdentity name="maxcsoGUI.exe" version="1.0.0.1" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Y07Lzjr+xN9fWCFoy4iiQow+WtUbOZzDuaFy3zny1qM=</dsig:DigestValue>
+        <dsig:DigestValue>ZDhziTSiANt3YF0ff/DELYAWQOU95Mwyjuea5weyM9w=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

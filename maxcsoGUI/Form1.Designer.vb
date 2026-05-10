@@ -45,7 +45,7 @@ Partial Class maxcsoGUI
         Me.UseLibdeflate = New System.Windows.Forms.CheckBox()
         Me.MeasureOnly = New System.Windows.Forms.CheckBox()
         Me.CrcOnly = New System.Windows.Forms.CheckBox()
-        Me.FileList = New System.Windows.Forms.ListBox()
+        Me.FileList = New DragDropListBox()
         Me.DropHelp = New System.Windows.Forms.Label()
         Me.ProgressText = New System.Windows.Forms.Label()
         Me.ConversionProgress = New System.Windows.Forms.ProgressBar()
@@ -383,6 +383,7 @@ Partial Class maxcsoGUI
         Me.Controls.Add(Me.Convert)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.About)
+        Me.AllowDrop = True
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.MaximizeBox = False
         Me.Name = "maxcsoGUI"
@@ -399,7 +400,7 @@ Partial Class maxcsoGUI
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents ThreadSelection As ComboBox
     Friend WithEvents ModeSelection As ComboBox
-    Friend WithEvents FileList As ListBox
+    Friend WithEvents FileList As DragDropListBox
     Friend WithEvents DropHelp As Label
     Friend WithEvents ProgressText As Label
     Friend WithEvents ConversionProgress As ProgressBar

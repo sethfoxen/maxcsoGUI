@@ -313,23 +313,36 @@ Public Class maxcsoGUI
     Private Sub ToolTip1_Popup(sender As Object, e As PopupEventArgs)
     End Sub
 
-    Private Sub ListBox1_DragEnter(sender As Object, e As DragEventArgs) Handles FileList.DragEnter
+    Private Sub Form1_DragEnter(sender As Object, e As DragEventArgs) Handles MyBase.DragEnter
+        e.Effect = DragDropEffects.Copy
+    End Sub
+
+    Private Sub Form1_DragOver(sender As Object, e As DragEventArgs) Handles MyBase.DragOver
+        e.Effect = DragDropEffects.Copy
+    End Sub
+
+    Private Sub Form1_DragDrop(sender As Object, e As DragEventArgs) Handles MyBase.DragDrop
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
+            For Each path As String In DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
+                FileList.Items.Add(path)
+            Next
         End If
+    End Sub
+
+    Private Sub ListBox1_DragEnter(sender As Object, e As DragEventArgs) Handles FileList.DragEnter
+        e.Effect = DragDropEffects.Copy
     End Sub
 
     Private Sub FileList_DragOver(sender As Object, e As DragEventArgs) Handles FileList.DragOver
-        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            e.Effect = DragDropEffects.Copy
-        End If
+        e.Effect = DragDropEffects.Copy
     End Sub
 
     Private Sub ListBox1_DragDrop(sender As Object, e As DragEventArgs) Handles FileList.DragDrop
-        Dim files() As String = e.Data.GetData(DataFormats.FileDrop)
-        For Each path In files
-            FileList.Items.Add(path)
-        Next
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            For Each path As String In DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
+                FileList.Items.Add(path)
+            Next
+        End If
     End Sub
 
     Private Sub FileList_DoubleClick(sender As Object, e As EventArgs) Handles FileList.DoubleClick
@@ -873,4 +886,18 @@ Public Class maxcsoGUI
     Private Function QuoteArgument(value As String) As String
         Return """" & value & """"
     End Function
+End Class
+
+Friend Class DragDropListBox
+    Inherits System.Windows.Forms.ListBox
+
+    Private Const WM_SETCURSOR As Integer = &H20
+
+    Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
+        If m.Msg = WM_SETCURSOR Then
+            m.Result = New IntPtr(1)
+            Return
+        End If
+        MyBase.WndProc(m)
+    End Sub
 End Class

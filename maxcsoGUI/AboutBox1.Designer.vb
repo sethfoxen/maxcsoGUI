@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class AboutBox1
     Inherits System.Windows.Forms.Form
 
@@ -23,11 +23,10 @@ Partial Class AboutBox1
     Private components As System.ComponentModel.IContainer
 
     'NOTE: The following procedure is required by the Windows Form Designer
-    'It can be modified using the Windows Form Designer.  
+    'It can be modified using the Windows Form Designer.
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(AboutBox1))
         Me.TableLayoutPanel = New System.Windows.Forms.TableLayoutPanel()
         Me.LabelProductName = New System.Windows.Forms.Label()
         Me.LabelVersion = New System.Windows.Forms.Label()
@@ -36,6 +35,7 @@ Partial Class AboutBox1
         Me.OKButton = New System.Windows.Forms.Button()
         Me.Author = New System.Windows.Forms.Label()
         Me.Email = New System.Windows.Forms.LinkLabel()
+        Me.LabelDescription = New System.Windows.Forms.Label()
         Me.TableLayoutPanel.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -46,10 +46,10 @@ Partial Class AboutBox1
         Me.TableLayoutPanel.Controls.Add(Me.LabelProductName, 0, 0)
         Me.TableLayoutPanel.Controls.Add(Me.LabelVersion, 0, 1)
         Me.TableLayoutPanel.Controls.Add(Me.Label1, 0, 2)
-        Me.TableLayoutPanel.Controls.Add(Me.GroupBox1, 0, 5)
-        Me.TableLayoutPanel.Controls.Add(Me.OKButton, 0, 6)
         Me.TableLayoutPanel.Controls.Add(Me.Author, 0, 3)
         Me.TableLayoutPanel.Controls.Add(Me.Email, 0, 4)
+        Me.TableLayoutPanel.Controls.Add(Me.GroupBox1, 0, 5)
+        Me.TableLayoutPanel.Controls.Add(Me.OKButton, 0, 6)
         Me.TableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TableLayoutPanel.Location = New System.Drawing.Point(9, 9)
         Me.TableLayoutPanel.Name = "TableLayoutPanel"
@@ -98,14 +98,46 @@ Partial Class AboutBox1
         Me.Label1.Text = "A simple GUI for maxcso."
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
+        'Author
+        '
+        Me.Author.AutoSize = True
+        Me.Author.Location = New System.Drawing.Point(3, 60)
+        Me.Author.Name = "Author"
+        Me.Author.Size = New System.Drawing.Size(112, 13)
+        Me.Author.TabIndex = 3
+        Me.Author.Text = "Written by Seth Foxen, Wade Murdock"
+        '
+        'Email
+        '
+        Me.Email.AutoSize = True
+        Me.Email.Location = New System.Drawing.Point(3, 80)
+        Me.Email.Name = "Email"
+        Me.Email.Size = New System.Drawing.Size(111, 13)
+        Me.Email.TabIndex = 4
+        Me.Email.TabStop = True
+        Me.Email.Text = "sethfoxen@gmail.com, wad11656@gmail.com"
+        '
         'GroupBox1
         '
+        Me.GroupBox1.Controls.Add(Me.LabelDescription)
         Me.GroupBox1.Location = New System.Drawing.Point(3, 103)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(259, 91)
+        Me.GroupBox1.Size = New System.Drawing.Size(259, 97)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = resources.GetString("GroupBox1.Text")
+        Me.GroupBox1.Text = ""
+        '
+        'LabelDescription
+        '
+        Me.LabelDescription.AutoSize = False
+        Me.LabelDescription.Location = New System.Drawing.Point(6, 10)
+        Me.LabelDescription.Name = "LabelDescription"
+        Me.LabelDescription.Size = New System.Drawing.Size(247, 80)
+        Me.LabelDescription.TabIndex = 0
+        Me.LabelDescription.Text = "maxcsoGUI includes the maxcso engine directly, so no separate maxcso.exe download is required." &
+            " Drag ISO files into the window, choose your options, and run the conversion from the app." &
+            " Double-click an ISO to remove it from the list."
+        Me.LabelDescription.UseCompatibleTextRendering = True
         '
         'OKButton
         '
@@ -117,31 +149,12 @@ Partial Class AboutBox1
         Me.OKButton.TabIndex = 0
         Me.OKButton.Text = "&OK"
         '
-        'Author
-        '
-        Me.Author.AutoSize = True
-        Me.Author.Location = New System.Drawing.Point(3, 60)
-        Me.Author.Name = "Author"
-        Me.Author.Size = New System.Drawing.Size(112, 13)
-        Me.Author.TabIndex = 3
-        Me.Author.Text = "Written by Seth Foxen"
-        '
-        'Email
-        '
-        Me.Email.AutoSize = True
-        Me.Email.Location = New System.Drawing.Point(3, 80)
-        Me.Email.Name = "Email"
-        Me.Email.Size = New System.Drawing.Size(111, 13)
-        Me.Email.TabIndex = 4
-        Me.Email.TabStop = True
-        Me.Email.Text = "sethfoxen@gmail.com"
-        '
         'AboutBox1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.OKButton
-        Me.ClientSize = New System.Drawing.Size(283, 251)
+        Me.ClientSize = New System.Drawing.Size(283, 257)
         Me.Controls.Add(Me.TableLayoutPanel)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
@@ -161,4 +174,5 @@ Partial Class AboutBox1
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents Author As Label
     Friend WithEvents Email As LinkLabel
+    Friend WithEvents LabelDescription As Label
 End Class

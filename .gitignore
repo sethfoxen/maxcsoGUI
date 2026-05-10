@@ -1,0 +1,14 @@
+# VB.NET build outputs
+maxcsoGUI/bin/
+maxcsoGUI/obj/
+
+# C++ bridge build outputs
+maxcsoBridge/Release*/
+maxcsoBridge/Debug*/
+maxcsoBridge/Win32/
+maxcsoBridge/x64/
+
+# Visual Studio
+.vs/
+*.user
+*.pfx

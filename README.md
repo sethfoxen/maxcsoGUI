@@ -2,7 +2,7 @@
 A simple GUI for maxcso.
 
 maxcso uses great compression for ISO files, but is commandline only. This program fixes that.
-The GUI looks for `maxcso.exe` or `maxcso32.exe` next to the app first, and also checks for a sibling `maxcso` repo when you're running it from source.
+Release builds now use a bundled native `maxcsoBridge.dll` built from the original `maxcso` library, so the GUI no longer needs `maxcso.exe` beside it. The old exe lookup is still kept as a fallback for source/dev scenarios.
 
 Current GUI options include:
 

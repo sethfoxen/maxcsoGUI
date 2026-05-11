@@ -1,14 +1,16 @@
 # maxcsoGUI
-A simple GUI for maxcso.
+A GUI for maxcso.
 
-maxcso uses great compression for ISO files, but is commandline only. This program fixes that.
-Release builds now use a bundled native `maxcsoBridge.dll` built from the original `maxcso` library, so the GUI no longer needs `maxcso.exe` beside it. The old exe lookup is still kept as a fallback for source/dev scenarios.
+<img width="1528" height="568" alt="Image" src="https://github.com/user-attachments/assets/08ff9621-058c-4d39-af22-be2944f274b9" />
+ 
+maxcso is a Command Line tool that uses great compression for ISO files. This program adds a GUI layer on top of it for easier use.
+This branch's [Release](https://github.com/wad11656/maxcsoGUI/releases/latest) provides a standalone executable that is pre-bundled with the original `maxcso.exe` program.
 
-Current GUI options include:
+This GUI version replicates all available flags/options available in the original Command Line `maxcso.exe` program, including:
 
-- Thread selection with readable `Thread` / `Threads` labels
-- Output format selection for `cso1`, `cso2`, `zso`, and `dax`
-- Fast mode, Zopfli, alternate block size, decompression, and custom output directory
-- Advanced flags for CRC32, measure-only runs, libdeflate, LZ4 brute force, and cost tuning
+- Thread count selection (which now defaults to the maximum available, like the original Command Line app).
+- All available Output formats (`cso1`, `cso2`, `zso`, `dax`)
+- Fast mode, optional [Zopfli](https://github.com/google/zopfli) compression, alternate block size, decompression, and custom output directory
+- Advanced flags for CRC32, measure-only runs, [libdeflate](https://github.com/ebiggers/libdeflate), [LZ4](https://github.com/lz4/lz4) brute force, and cost tuning
 
 Thanks to unknownbrackets for maxcso https://github.com/unknownbrackets/maxcso

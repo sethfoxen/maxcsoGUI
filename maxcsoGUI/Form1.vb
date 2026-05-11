@@ -153,6 +153,9 @@ Public Class maxcsoGUI
 
     Private Shared ReadOnly ProgressPercentPattern As New System.Text.RegularExpressions.Regex("(\d+)%", System.Text.RegularExpressions.RegexOptions.Compiled)
 
+    Private _dragFilter As DragCursorMessageFilter
+    Private _copyCursor As Cursor = Nothing
+
     Private Function GetSelectedThreadCount() As Integer
         Dim selectedThread As ThreadOption = TryCast(ThreadSelection.SelectedItem, ThreadOption)
         If selectedThread IsNot Nothing Then
@@ -188,6 +191,33 @@ Public Class maxcsoGUI
         FormatSelection.SelectedIndex = 0
 
         UpdateCompressionOptionState()
+
+        Dim cursorPath As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Cursors", "aero_copy.cur")
+        If File.Exists(cursorPath) Then
+            Try
+                Using stream As New FileStream(cursorPath, FileMode.Open, FileAccess.Read, FileShare.Read)
+                    _copyCursor = New Cursor(stream)
+                End Using
+            Catch
+            End Try
+        End If
+        DragDropListBox.DragCopyCursor = _copyCursor
+
+        _dragFilter = New DragCursorMessageFilter()
+        Application.AddMessageFilter(_dragFilter)
+    End Sub
+
+    Private Sub Form1_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
+        Application.RemoveMessageFilter(_dragFilter)
+    End Sub
+
+    Protected Overrides Sub WndProc(ByRef m As Message)
+        If m.Msg = &H20 AndAlso DragCursorMessageFilter.IsDragActive AndAlso _copyCursor IsNot Nothing Then
+            Cursor.Current = _copyCursor
+            m.Result = New IntPtr(1)
+            Return
+        End If
+        MyBase.WndProc(m)
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles About.Click
@@ -314,6 +344,7 @@ Public Class maxcsoGUI
     End Sub
 
     Private Sub Form1_DragEnter(sender As Object, e As DragEventArgs) Handles MyBase.DragEnter
+        DragCursorMessageFilter.IsDragActive = True
         e.Effect = DragDropEffects.Copy
     End Sub
 
@@ -322,6 +353,7 @@ Public Class maxcsoGUI
     End Sub
 
     Private Sub Form1_DragDrop(sender As Object, e As DragEventArgs) Handles MyBase.DragDrop
+        DragCursorMessageFilter.IsDragActive = False
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             For Each path As String In DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
                 FileList.Items.Add(path)
@@ -329,8 +361,21 @@ Public Class maxcsoGUI
         End If
     End Sub
 
+    Private Sub Form1_DragLeave(sender As Object, e As EventArgs) Handles MyBase.DragLeave
+        If Not ClientRectangle.Contains(PointToClient(Cursor.Position)) Then
+            DragCursorMessageFilter.IsDragActive = False
+        End If
+    End Sub
+
+    Private Sub Form1_GiveFeedback(sender As Object, e As GiveFeedbackEventArgs) Handles MyBase.GiveFeedback
+        e.UseDefaultCursors = False
+        Cursor.Current = If(e.Effect = DragDropEffects.Copy AndAlso _copyCursor IsNot Nothing, _copyCursor, Cursors.Default)
+    End Sub
+
     Private Sub ListBox1_DragEnter(sender As Object, e As DragEventArgs) Handles FileList.DragEnter
+        DragCursorMessageFilter.IsDragActive = True
         e.Effect = DragDropEffects.Copy
+        FileList.BackColor = Color.FromArgb(210, 230, 255)
     End Sub
 
     Private Sub FileList_DragOver(sender As Object, e As DragEventArgs) Handles FileList.DragOver
@@ -338,11 +383,25 @@ Public Class maxcsoGUI
     End Sub
 
     Private Sub ListBox1_DragDrop(sender As Object, e As DragEventArgs) Handles FileList.DragDrop
+        DragCursorMessageFilter.IsDragActive = False
+        FileList.BackColor = SystemColors.Window
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             For Each path As String In DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
                 FileList.Items.Add(path)
             Next
         End If
+    End Sub
+
+    Private Sub FileList_DragLeave(sender As Object, e As EventArgs) Handles FileList.DragLeave
+        FileList.BackColor = SystemColors.Window
+        If Not ClientRectangle.Contains(PointToClient(Cursor.Position)) Then
+            DragCursorMessageFilter.IsDragActive = False
+        End If
+    End Sub
+
+    Private Sub FileList_GiveFeedback(sender As Object, e As GiveFeedbackEventArgs) Handles FileList.GiveFeedback
+        e.UseDefaultCursors = False
+        Cursor.Current = If(e.Effect = DragDropEffects.Copy AndAlso _copyCursor IsNot Nothing, _copyCursor, Cursors.Default)
     End Sub
 
     Private Sub FileList_DoubleClick(sender As Object, e As EventArgs) Handles FileList.DoubleClick
@@ -892,12 +951,30 @@ Friend Class DragDropListBox
     Inherits System.Windows.Forms.ListBox
 
     Private Const WM_SETCURSOR As Integer = &H20
+    Friend Shared DragCopyCursor As Cursor = Nothing
 
     Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
-        If m.Msg = WM_SETCURSOR Then
+        If m.Msg = WM_SETCURSOR AndAlso DragCursorMessageFilter.IsDragActive Then
+            If DragCopyCursor IsNot Nothing Then
+                Cursor.Current = DragCopyCursor
+            End If
             m.Result = New IntPtr(1)
             Return
         End If
         MyBase.WndProc(m)
     End Sub
+End Class
+
+Friend Class DragCursorMessageFilter
+    Implements IMessageFilter
+
+    Private Const WM_SETCURSOR As Integer = &H20
+    Friend Shared IsDragActive As Boolean = False
+
+    Public Function PreFilterMessage(ByRef m As Message) As Boolean Implements IMessageFilter.PreFilterMessage
+        If m.Msg = WM_SETCURSOR AndAlso IsDragActive Then
+            Return True
+        End If
+        Return False
+    End Function
 End Class

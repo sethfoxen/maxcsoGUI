@@ -32,19 +32,23 @@ Partial Class maxcsoGUI
         Me.BlockText = New System.Windows.Forms.TextBox()
         Me.BlockSize = New System.Windows.Forms.CheckBox()
         Me.DeleteCheck = New System.Windows.Forms.CheckBox()
-        Me.Zopfli = New System.Windows.Forms.CheckBox()
         Me.Fast = New System.Windows.Forms.CheckBox()
         Me.FormatSelection = New System.Windows.Forms.ComboBox()
         Me.ThreadSelection = New System.Windows.Forms.ComboBox()
+        Me.CrcOnly = New System.Windows.Forms.CheckBox()
+        Me.MeasureOnly = New System.Windows.Forms.CheckBox()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.UseZlib = New System.Windows.Forms.CheckBox()
+        Me.UseZopfli = New System.Windows.Forms.CheckBox()
+        Me.Use7zDeflate = New System.Windows.Forms.CheckBox()
+        Me.UseLz4 = New System.Windows.Forms.CheckBox()
+        Me.UseLz4Brute = New System.Windows.Forms.CheckBox()
+        Me.UseLibdeflate = New System.Windows.Forms.CheckBox()
+        Me.PoolDivider = New System.Windows.Forms.Label()
         Me.Lz4CostText = New System.Windows.Forms.TextBox()
         Me.Lz4Cost = New System.Windows.Forms.CheckBox()
         Me.OrigCostText = New System.Windows.Forms.TextBox()
         Me.OrigCost = New System.Windows.Forms.CheckBox()
-        Me.UseLz4Brute = New System.Windows.Forms.CheckBox()
-        Me.UseLibdeflate = New System.Windows.Forms.CheckBox()
-        Me.MeasureOnly = New System.Windows.Forms.CheckBox()
-        Me.CrcOnly = New System.Windows.Forms.CheckBox()
         Me.FileList = New DragDropListBox()
         Me.DropHelp = New System.Windows.Forms.Label()
         Me.ProgressText = New System.Windows.Forms.Label()
@@ -60,7 +64,7 @@ Partial Class maxcsoGUI
         '
         'About
         '
-        Me.About.Location = New System.Drawing.Point(12, 227)
+        Me.About.Location = New System.Drawing.Point(12, 249)
         Me.About.Name = "About"
         Me.About.Size = New System.Drawing.Size(75, 23)
         Me.About.TabIndex = 0
@@ -75,8 +79,9 @@ Partial Class maxcsoGUI
         Me.GroupBox1.Controls.Add(Me.ModeSelection)
         Me.GroupBox1.Controls.Add(Me.BlockText)
         Me.GroupBox1.Controls.Add(Me.BlockSize)
+        Me.GroupBox1.Controls.Add(Me.CrcOnly)
+        Me.GroupBox1.Controls.Add(Me.MeasureOnly)
         Me.GroupBox1.Controls.Add(Me.DeleteCheck)
-        Me.GroupBox1.Controls.Add(Me.Zopfli)
         Me.GroupBox1.Controls.Add(Me.Fast)
         Me.GroupBox1.Controls.Add(Me.FormatSelection)
         Me.GroupBox1.Controls.Add(Me.ThreadSelection)
@@ -130,7 +135,7 @@ Partial Class maxcsoGUI
         Me.BlockText.Enabled = False
         Me.BlockText.Location = New System.Drawing.Point(104, 69)
         Me.BlockText.Name = "BlockText"
-        Me.BlockText.Size = New System.Drawing.Size(116, 20)
+        Me.BlockText.Size = New System.Drawing.Size(40, 20)
         Me.BlockText.TabIndex = 10
         Me.BlockText.Text = "2048"
         '
@@ -149,7 +154,7 @@ Partial Class maxcsoGUI
         'DeleteCheck
         '
         Me.DeleteCheck.AutoSize = True
-        Me.DeleteCheck.Location = New System.Drawing.Point(324, 71)
+        Me.DeleteCheck.Location = New System.Drawing.Point(334, 71)
         Me.DeleteCheck.Name = "DeleteCheck"
         Me.DeleteCheck.Size = New System.Drawing.Size(119, 17)
         Me.DeleteCheck.TabIndex = 8
@@ -157,18 +162,6 @@ Partial Class maxcsoGUI
         Me.ToolTip1.SetToolTip(Me.DeleteCheck, "Check to delete the original ISO files after they've been converted." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(BE CAREFUL" &
         "!! EVEN IF A FILE FAILS TO CONVERT, THE ORIGINAL WILL STILL BE DELETED!!)")
         Me.DeleteCheck.UseVisualStyleBackColor = True
-        '
-        'Zopfli
-        '
-        Me.Zopfli.AutoSize = True
-        Me.Zopfli.Location = New System.Drawing.Point(228, 71)
-        Me.Zopfli.Name = "Zopfli"
-        Me.Zopfli.Size = New System.Drawing.Size(88, 17)
-        Me.Zopfli.TabIndex = 8
-        Me.Zopfli.Text = "Enable Zopfli"
-        Me.ToolTip1.SetToolTip(Me.Zopfli, "Enable trials with Zopfli for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Significantly slower, uses m" &
-        "ore memory, marginally smaller files.)")
-        Me.Zopfli.UseVisualStyleBackColor = True
         '
         'Fast
         '
@@ -202,90 +195,145 @@ Partial Class maxcsoGUI
         '
         'GroupBox2
         '
-        Me.GroupBox2.Controls.Add(Me.Lz4CostText)
-        Me.GroupBox2.Controls.Add(Me.Lz4Cost)
-        Me.GroupBox2.Controls.Add(Me.OrigCostText)
-        Me.GroupBox2.Controls.Add(Me.OrigCost)
+        Me.GroupBox2.Controls.Add(Me.UseZlib)
+        Me.GroupBox2.Controls.Add(Me.UseZopfli)
+        Me.GroupBox2.Controls.Add(Me.Use7zDeflate)
+        Me.GroupBox2.Controls.Add(Me.UseLz4)
         Me.GroupBox2.Controls.Add(Me.UseLz4Brute)
         Me.GroupBox2.Controls.Add(Me.UseLibdeflate)
-        Me.GroupBox2.Controls.Add(Me.MeasureOnly)
-        Me.GroupBox2.Controls.Add(Me.CrcOnly)
+        Me.GroupBox2.Controls.Add(Me.PoolDivider)
+        Me.GroupBox2.Controls.Add(Me.OrigCost)
+        Me.GroupBox2.Controls.Add(Me.OrigCostText)
+        Me.GroupBox2.Controls.Add(Me.Lz4Cost)
+        Me.GroupBox2.Controls.Add(Me.Lz4CostText)
         Me.GroupBox2.Location = New System.Drawing.Point(299, 101)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(454, 74)
+        Me.GroupBox2.Size = New System.Drawing.Size(454, 96)
         Me.GroupBox2.TabIndex = 6
         Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Advanced"
+        Me.GroupBox2.Text = "Compression Algorithm Trial Pool"
         '
-        'Lz4CostText
+        'UseZlib
         '
-        Me.Lz4CostText.Enabled = False
-        Me.Lz4CostText.Location = New System.Drawing.Point(360, 43)
-        Me.Lz4CostText.Name = "Lz4CostText"
-        Me.Lz4CostText.Size = New System.Drawing.Size(70, 20)
-        Me.Lz4CostText.TabIndex = 7
-        Me.Lz4CostText.Text = "0"
+        Me.UseZlib.AutoSize = True
+        Me.UseZlib.Location = New System.Drawing.Point(10, 20)
+        Me.UseZlib.Name = "UseZlib"
+        Me.UseZlib.Size = New System.Drawing.Size(78, 17)
+        Me.UseZlib.TabIndex = 0
+        Me.UseZlib.Text = "Enable zlib"
+        Me.ToolTip1.SetToolTip(Me.UseZlib, "Enable trials with zlib for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Default method - broadly compatible with a balanced speed/size trade-off.)")
+        Me.UseZlib.UseVisualStyleBackColor = True
         '
-        'Lz4Cost
+        'UseZopfli
         '
-        Me.Lz4Cost.AutoSize = True
-        Me.Lz4Cost.Location = New System.Drawing.Point(262, 45)
-        Me.Lz4Cost.Name = "Lz4Cost"
-        Me.Lz4Cost.Size = New System.Drawing.Size(74, 17)
-        Me.Lz4Cost.TabIndex = 6
-        Me.Lz4Cost.Text = "LZ4 Cost %"
-        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow lz4 to increase block size by this percent at most." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(CSO v2 only.)")
-        Me.Lz4Cost.UseVisualStyleBackColor = True
+        Me.UseZopfli.AutoSize = True
+        Me.UseZopfli.Location = New System.Drawing.Point(115, 20)
+        Me.UseZopfli.Name = "UseZopfli"
+        Me.UseZopfli.Size = New System.Drawing.Size(88, 17)
+        Me.UseZopfli.TabIndex = 1
+        Me.UseZopfli.Text = "Enable Zopfli"
+        Me.ToolTip1.SetToolTip(Me.UseZopfli, "Enable trials with Zopfli for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Significantly slower, uses more memory, marginally smaller files.)")
+        Me.UseZopfli.UseVisualStyleBackColor = True
         '
-        'OrigCostText
+        'Use7zDeflate
         '
-        Me.OrigCostText.Enabled = False
-        Me.OrigCostText.Location = New System.Drawing.Point(360, 20)
-        Me.OrigCostText.Name = "OrigCostText"
-        Me.OrigCostText.Size = New System.Drawing.Size(70, 20)
-        Me.OrigCostText.TabIndex = 5
-        Me.OrigCostText.Text = "0"
+        Me.Use7zDeflate.AutoSize = True
+        Me.Use7zDeflate.Location = New System.Drawing.Point(225, 20)
+        Me.Use7zDeflate.Name = "Use7zDeflate"
+        Me.Use7zDeflate.Size = New System.Drawing.Size(108, 17)
+        Me.Use7zDeflate.TabIndex = 2
+        Me.Use7zDeflate.Text = "Enable 7zdeflate"
+        Me.ToolTip1.SetToolTip(Me.Use7zDeflate, "Enable trials with 7-zip's deflate implementation." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Slow, but often produces smaller deflate output than zlib.)")
+        Me.Use7zDeflate.UseVisualStyleBackColor = True
         '
-        'OrigCost
+        'UseLz4
         '
-        Me.OrigCost.AutoSize = True
-        Me.OrigCost.Location = New System.Drawing.Point(262, 22)
-        Me.OrigCost.Name = "OrigCost"
-        Me.OrigCost.Size = New System.Drawing.Size(76, 17)
-        Me.OrigCost.TabIndex = 4
-        Me.OrigCost.Text = "Orig Cost %"
-        Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow uncompressed data to increase block size by this percent at most.")
-        Me.OrigCost.UseVisualStyleBackColor = True
+        Me.UseLz4.AutoSize = True
+        Me.UseLz4.Location = New System.Drawing.Point(10, 43)
+        Me.UseLz4.Name = "UseLz4"
+        Me.UseLz4.Size = New System.Drawing.Size(81, 17)
+        Me.UseLz4.TabIndex = 3
+        Me.UseLz4.Text = "Enable LZ4"
+        Me.ToolTip1.SetToolTip(Me.UseLz4, "Enable trials with lz4hc for lz4 compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(CSO v2 and ZSO only.)")
+        Me.UseLz4.UseVisualStyleBackColor = True
         '
         'UseLz4Brute
         '
         Me.UseLz4Brute.AutoSize = True
-        Me.UseLz4Brute.Location = New System.Drawing.Point(133, 45)
+        Me.UseLz4Brute.Location = New System.Drawing.Point(115, 43)
         Me.UseLz4Brute.Name = "UseLz4Brute"
         Me.UseLz4Brute.Size = New System.Drawing.Size(104, 17)
-        Me.UseLz4Brute.TabIndex = 3
+        Me.UseLz4Brute.TabIndex = 4
         Me.UseLz4Brute.Text = "Enable LZ4 Brute"
-        Me.ToolTip1.SetToolTip(Me.UseLz4Brute, "Enable bruteforce trials with lz4hc for lz4 compression.")
+        Me.ToolTip1.SetToolTip(Me.UseLz4Brute, "Enable bruteforce trials with lz4hc." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Much slower than plain LZ4; requires LZ4 to be enabled.)")
         Me.UseLz4Brute.UseVisualStyleBackColor = True
         '
         'UseLibdeflate
         '
         Me.UseLibdeflate.AutoSize = True
-        Me.UseLibdeflate.Location = New System.Drawing.Point(133, 22)
+        Me.UseLibdeflate.Location = New System.Drawing.Point(225, 43)
         Me.UseLibdeflate.Name = "UseLibdeflate"
         Me.UseLibdeflate.Size = New System.Drawing.Size(105, 17)
-        Me.UseLibdeflate.TabIndex = 2
+        Me.UseLibdeflate.TabIndex = 5
         Me.UseLibdeflate.Text = "Enable libdeflate"
-        Me.ToolTip1.SetToolTip(Me.UseLibdeflate, "Enable trials with libdeflate compression.")
+        Me.ToolTip1.SetToolTip(Me.UseLibdeflate, "Enable trials with libdeflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Modern, faster deflate alternative; can produce smaller results in some cases.)")
         Me.UseLibdeflate.UseVisualStyleBackColor = True
+        '
+        'PoolDivider
+        '
+        Me.PoolDivider.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.PoolDivider.Location = New System.Drawing.Point(10, 66)
+        Me.PoolDivider.Name = "PoolDivider"
+        Me.PoolDivider.Size = New System.Drawing.Size(434, 2)
+        Me.PoolDivider.TabIndex = 6
+        '
+        'OrigCost
+        '
+        Me.OrigCost.AutoSize = True
+        Me.OrigCost.Location = New System.Drawing.Point(10, 73)
+        Me.OrigCost.Name = "OrigCost"
+        Me.OrigCost.Size = New System.Drawing.Size(76, 17)
+        Me.OrigCost.TabIndex = 7
+        Me.OrigCost.Text = "Orig Cost %"
+        Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow uncompressed data to increase block size by this percent at most.")
+        Me.OrigCost.UseVisualStyleBackColor = True
+        '
+        'OrigCostText
+        '
+        Me.OrigCostText.Enabled = False
+        Me.OrigCostText.Location = New System.Drawing.Point(92, 71)
+        Me.OrigCostText.Name = "OrigCostText"
+        Me.OrigCostText.Size = New System.Drawing.Size(50, 20)
+        Me.OrigCostText.TabIndex = 8
+        Me.OrigCostText.Text = "0"
+        '
+        'Lz4Cost
+        '
+        Me.Lz4Cost.AutoSize = True
+        Me.Lz4Cost.Location = New System.Drawing.Point(225, 73)
+        Me.Lz4Cost.Name = "Lz4Cost"
+        Me.Lz4Cost.Size = New System.Drawing.Size(74, 17)
+        Me.Lz4Cost.TabIndex = 9
+        Me.Lz4Cost.Text = "LZ4 Cost %"
+        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow lz4 to increase block size by this percent at most." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(CSO v2 and ZSO only.)")
+        Me.Lz4Cost.UseVisualStyleBackColor = True
+        '
+        'Lz4CostText
+        '
+        Me.Lz4CostText.Enabled = False
+        Me.Lz4CostText.Location = New System.Drawing.Point(305, 71)
+        Me.Lz4CostText.Name = "Lz4CostText"
+        Me.Lz4CostText.Size = New System.Drawing.Size(50, 20)
+        Me.Lz4CostText.TabIndex = 10
+        Me.Lz4CostText.Text = "0"
         '
         'MeasureOnly
         '
         Me.MeasureOnly.AutoSize = True
-        Me.MeasureOnly.Location = New System.Drawing.Point(10, 45)
+        Me.MeasureOnly.Location = New System.Drawing.Point(240, 71)
         Me.MeasureOnly.Name = "MeasureOnly"
         Me.MeasureOnly.Size = New System.Drawing.Size(90, 17)
-        Me.MeasureOnly.TabIndex = 1
+        Me.MeasureOnly.TabIndex = 16
         Me.MeasureOnly.Text = "Measure Only"
         Me.ToolTip1.SetToolTip(Me.MeasureOnly, "Measure compressed size without saving output.")
         Me.MeasureOnly.UseVisualStyleBackColor = True
@@ -293,10 +341,10 @@ Partial Class maxcsoGUI
         'CrcOnly
         '
         Me.CrcOnly.AutoSize = True
-        Me.CrcOnly.Location = New System.Drawing.Point(10, 22)
+        Me.CrcOnly.Location = New System.Drawing.Point(152, 71)
         Me.CrcOnly.Name = "CrcOnly"
         Me.CrcOnly.Size = New System.Drawing.Size(82, 17)
-        Me.CrcOnly.TabIndex = 0
+        Me.CrcOnly.TabIndex = 15
         Me.CrcOnly.Text = "CRC32 Only"
         Me.ToolTip1.SetToolTip(Me.CrcOnly, "Log CRC32 checksums and skip output files.")
         Me.CrcOnly.UseVisualStyleBackColor = True
@@ -309,13 +357,13 @@ Partial Class maxcsoGUI
         Me.FileList.ImeMode = System.Windows.Forms.ImeMode.[On]
         Me.FileList.Location = New System.Drawing.Point(12, 9)
         Me.FileList.Name = "FileList"
-        Me.FileList.Size = New System.Drawing.Size(280, 199)
+        Me.FileList.Size = New System.Drawing.Size(280, 221)
         Me.FileList.TabIndex = 4
         Me.FileList.Tag = ""
         '
         'DropHelp
         '
-        Me.DropHelp.Location = New System.Drawing.Point(299, 180)
+        Me.DropHelp.Location = New System.Drawing.Point(299, 202)
         Me.DropHelp.Name = "DropHelp"
         Me.DropHelp.Size = New System.Drawing.Size(454, 28)
         Me.DropHelp.TabIndex = 5
@@ -325,7 +373,7 @@ Partial Class maxcsoGUI
         '
         'ProgressText
         '
-        Me.ProgressText.Location = New System.Drawing.Point(299, 210)
+        Me.ProgressText.Location = New System.Drawing.Point(299, 232)
         Me.ProgressText.Name = "ProgressText"
         Me.ProgressText.Size = New System.Drawing.Size(454, 13)
         Me.ProgressText.TabIndex = 7
@@ -333,14 +381,14 @@ Partial Class maxcsoGUI
         '
         'ConversionProgress
         '
-        Me.ConversionProgress.Location = New System.Drawing.Point(299, 226)
+        Me.ConversionProgress.Location = New System.Drawing.Point(299, 248)
         Me.ConversionProgress.Name = "ConversionProgress"
         Me.ConversionProgress.Size = New System.Drawing.Size(219, 15)
         Me.ConversionProgress.TabIndex = 8
         '
         'Convert
         '
-        Me.Convert.Location = New System.Drawing.Point(522, 221)
+        Me.Convert.Location = New System.Drawing.Point(522, 243)
         Me.Convert.Name = "Convert"
         Me.Convert.Size = New System.Drawing.Size(75, 23)
         Me.Convert.TabIndex = 3
@@ -349,7 +397,7 @@ Partial Class maxcsoGUI
         '
         'ProgressBytes
         '
-        Me.ProgressBytes.Location = New System.Drawing.Point(601, 226)
+        Me.ProgressBytes.Location = New System.Drawing.Point(601, 248)
         Me.ProgressBytes.Name = "ProgressBytes"
         Me.ProgressBytes.Size = New System.Drawing.Size(110, 15)
         Me.ProgressBytes.TabIndex = 10
@@ -357,7 +405,7 @@ Partial Class maxcsoGUI
         '
         'ProgressPercent
         '
-        Me.ProgressPercent.Location = New System.Drawing.Point(715, 226)
+        Me.ProgressPercent.Location = New System.Drawing.Point(715, 248)
         Me.ProgressPercent.Name = "ProgressPercent"
         Me.ProgressPercent.Size = New System.Drawing.Size(40, 15)
         Me.ProgressPercent.TabIndex = 9
@@ -372,7 +420,7 @@ Partial Class maxcsoGUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(765, 255)
+        Me.ClientSize = New System.Drawing.Size(765, 277)
         Me.Controls.Add(Me.FileList)
         Me.Controls.Add(Me.ProgressBytes)
         Me.Controls.Add(Me.ProgressPercent)
@@ -408,15 +456,19 @@ Partial Class maxcsoGUI
     Friend WithEvents ProgressPercent As Label
     Friend WithEvents ProgressBytes As Label
     Friend WithEvents GroupBox2 As GroupBox
+    Friend WithEvents UseZlib As CheckBox
+    Friend WithEvents UseZopfli As CheckBox
+    Friend WithEvents Use7zDeflate As CheckBox
+    Friend WithEvents UseLz4 As CheckBox
+    Friend WithEvents UseLz4Brute As CheckBox
+    Friend WithEvents UseLibdeflate As CheckBox
+    Friend WithEvents PoolDivider As Label
     Friend WithEvents Lz4CostText As TextBox
     Friend WithEvents Lz4Cost As CheckBox
     Friend WithEvents OrigCostText As TextBox
     Friend WithEvents OrigCost As CheckBox
-    Friend WithEvents UseLz4Brute As CheckBox
-    Friend WithEvents UseLibdeflate As CheckBox
     Friend WithEvents MeasureOnly As CheckBox
     Friend WithEvents CrcOnly As CheckBox
-    Friend WithEvents Zopfli As CheckBox
     Friend WithEvents Fast As CheckBox
     Friend WithEvents FormatSelection As ComboBox
     Friend WithEvents ToolTip1 As ToolTip

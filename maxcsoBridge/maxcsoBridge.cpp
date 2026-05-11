@@ -86,23 +86,31 @@ uint32_t BuildFlags(const MaxcsoBridgeRequest *request, std::wstring &validation
 	}
 
 	uint32_t flagsFinal = 0;
-	if (flagsFmt & maxcso::TASKFLAG_FMT_CSO_2) {
-		flagsFinal = maxcso::TASKFLAG_NO_ZOPFLI | maxcso::TASKFLAG_NO_LZ4_HC_BRUTE;
-	} else if (flagsFmt & maxcso::TASKFLAG_FMT_ZSO) {
-		flagsFinal = maxcso::TASKFLAG_NO_ZLIB | maxcso::TASKFLAG_NO_7ZIP | maxcso::TASKFLAG_NO_ZOPFLI | maxcso::TASKFLAG_NO_LZ4_HC_BRUTE | maxcso::TASKFLAG_NO_LIBDEFLATE;
-	} else {
-		flagsFinal = maxcso::TASKFLAG_NO_ZOPFLI | maxcso::TASKFLAG_NO_LIBDEFLATE | maxcso::TASKFLAG_NO_LZ4;
+	if (!request->use_zlib) {
+		flagsFinal |= maxcso::TASKFLAG_NO_ZLIB | maxcso::TASKFLAG_NO_ZLIB_DEFAULT | maxcso::TASKFLAG_NO_ZLIB_BRUTE;
+	}
+	if (!request->use_zopfli) {
+		flagsFinal |= maxcso::TASKFLAG_NO_ZOPFLI;
+	}
+	if (!request->use_7zdeflate) {
+		flagsFinal |= maxcso::TASKFLAG_NO_7ZIP;
+	}
+	if (!request->use_lz4) {
+		flagsFinal |= maxcso::TASKFLAG_NO_LZ4 | maxcso::TASKFLAG_NO_LZ4_HC;
+	}
+	if (!request->use_lz4brute) {
+		flagsFinal |= maxcso::TASKFLAG_NO_LZ4_HC_BRUTE;
+	}
+	if (!request->use_libdeflate) {
+		flagsFinal |= maxcso::TASKFLAG_NO_LIBDEFLATE;
 	}
 
-	if (request->use_zopfli) {
-		flagsFinal &= ~maxcso::TASKFLAG_NO_ZOPFLI;
-	}
-	if (request->use_libdeflate) {
-		flagsFinal &= ~maxcso::TASKFLAG_NO_LIBDEFLATE;
-	}
-	if (request->use_lz4brute) {
-		flagsFinal &= ~maxcso::TASKFLAG_NO_LZ4_HC_BRUTE;
-		flagsFinal &= ~maxcso::TASKFLAG_NO_LZ4_HC;
+	// Defense in depth: format-incompatible methods are forced off even if the caller asked for them.
+	if (flagsFmt & maxcso::TASKFLAG_FMT_ZSO) {
+		flagsFinal |= maxcso::TASKFLAG_NO_ZLIB | maxcso::TASKFLAG_NO_ZLIB_DEFAULT | maxcso::TASKFLAG_NO_ZLIB_BRUTE |
+			maxcso::TASKFLAG_NO_ZOPFLI | maxcso::TASKFLAG_NO_7ZIP | maxcso::TASKFLAG_NO_LIBDEFLATE;
+	} else if ((flagsFmt & maxcso::TASKFLAG_FMT_CSO_2) == 0) {
+		flagsFinal |= maxcso::TASKFLAG_NO_LZ4 | maxcso::TASKFLAG_NO_LZ4_HC | maxcso::TASKFLAG_NO_LZ4_HC_BRUTE;
 	}
 
 	if (request->fast) {

@@ -44,25 +44,44 @@ Public Class maxcsoGUI
         End Function
     End Class
 
+    Friend Enum CompressionAlgo
+        Zlib
+        Zopfli
+        SevenZipDeflate
+        Lz4
+        Lz4Brute
+        Libdeflate
+    End Enum
+
+    Private Shared ReadOnly DeflateAlgos As CompressionAlgo() = {
+        CompressionAlgo.Zlib, CompressionAlgo.Zopfli, CompressionAlgo.SevenZipDeflate, CompressionAlgo.Libdeflate
+    }
+
+    Private Shared ReadOnly Lz4Algos As CompressionAlgo() = {
+        CompressionAlgo.Lz4, CompressionAlgo.Lz4Brute
+    }
+
     Private Class FormatOption
         Private ReadOnly displayName_ As String
         Private ReadOnly argumentValue_ As String
         Private ReadOnly outputExtension_ As String
-        Private ReadOnly supportsZopfli_ As Boolean
+        Private ReadOnly available_ As HashSet(Of CompressionAlgo)
+        Private ReadOnly defaults_ As HashSet(Of CompressionAlgo)
         Private ReadOnly supportsAltBlockSize_ As Boolean
-        Private ReadOnly supportsLibdeflate_ As Boolean
-        Private ReadOnly supportsLz4Brute_ As Boolean
-        Private ReadOnly supportsLz4Cost_ As Boolean
+        Private ReadOnly requireLz4_ As Boolean
+        Private ReadOnly requireDeflate_ As Boolean
 
-        Public Sub New(displayName As String, argumentValue As String, outputExtension As String, supportsZopfli As Boolean, supportsAltBlockSize As Boolean, supportsLibdeflate As Boolean, supportsLz4Brute As Boolean, supportsLz4Cost As Boolean)
+        Public Sub New(displayName As String, argumentValue As String, outputExtension As String,
+                       available As HashSet(Of CompressionAlgo), defaults As HashSet(Of CompressionAlgo),
+                       supportsAltBlockSize As Boolean, requireLz4 As Boolean, requireDeflate As Boolean)
             displayName_ = displayName
             argumentValue_ = argumentValue
             outputExtension_ = outputExtension
-            supportsZopfli_ = supportsZopfli
+            available_ = available
+            defaults_ = defaults
             supportsAltBlockSize_ = supportsAltBlockSize
-            supportsLibdeflate_ = supportsLibdeflate
-            supportsLz4Brute_ = supportsLz4Brute
-            supportsLz4Cost_ = supportsLz4Cost
+            requireLz4_ = requireLz4
+            requireDeflate_ = requireDeflate
         End Sub
 
         Public ReadOnly Property DisplayName As String
@@ -83,9 +102,15 @@ Public Class maxcsoGUI
             End Get
         End Property
 
-        Public ReadOnly Property SupportsZopfli As Boolean
+        Public ReadOnly Property Available As HashSet(Of CompressionAlgo)
             Get
-                Return supportsZopfli_
+                Return available_
+            End Get
+        End Property
+
+        Public ReadOnly Property Defaults As HashSet(Of CompressionAlgo)
+            Get
+                Return defaults_
             End Get
         End Property
 
@@ -95,21 +120,15 @@ Public Class maxcsoGUI
             End Get
         End Property
 
-        Public ReadOnly Property SupportsLibdeflate As Boolean
+        Public ReadOnly Property RequireLz4 As Boolean
             Get
-                Return supportsLibdeflate_
+                Return requireLz4_
             End Get
         End Property
 
-        Public ReadOnly Property SupportsLz4Brute As Boolean
+        Public ReadOnly Property RequireDeflate As Boolean
             Get
-                Return supportsLz4Brute_
-            End Get
-        End Property
-
-        Public ReadOnly Property SupportsLz4Cost As Boolean
-            Get
-                Return supportsLz4Cost_
+                Return requireDeflate_
             End Get
         End Property
 
@@ -122,9 +141,12 @@ Public Class maxcsoGUI
         Public Property ThreadCount As Integer
         Public Property Format As FormatOption
         Public Property Fast As Boolean
+        Public Property UseZlib As Boolean
         Public Property UseZopfli As Boolean
-        Public Property UseLibdeflate As Boolean
+        Public Property Use7zDeflate As Boolean
+        Public Property UseLz4 As Boolean
         Public Property UseLz4Brute As Boolean
+        Public Property UseLibdeflate As Boolean
         Public Property Decompress As Boolean
         Public Property CrcOnly As Boolean
         Public Property MeasureOnly As Boolean
@@ -155,6 +177,99 @@ Public Class maxcsoGUI
 
     Private _dragFilter As DragCursorMessageFilter
     Private _copyCursor As Cursor = Nothing
+    Private _suppressPoolEvents As Boolean = False
+
+    Private Function BuildFormatOption(displayName As String, argumentValue As String, outputExtension As String) As FormatOption
+        Dim available As New HashSet(Of CompressionAlgo)()
+        Dim defaults As New HashSet(Of CompressionAlgo)()
+        Dim supportsAltBlock As Boolean = True
+        Dim requireLz4 As Boolean = False
+        Dim requireDeflate As Boolean = False
+
+        Select Case argumentValue
+            Case "cso1"
+                available.UnionWith(DeflateAlgos)
+                defaults.Add(CompressionAlgo.Zlib)
+                defaults.Add(CompressionAlgo.SevenZipDeflate)
+                requireDeflate = True
+            Case "cso2"
+                available.UnionWith(DeflateAlgos)
+                available.UnionWith(Lz4Algos)
+                defaults.Add(CompressionAlgo.Zlib)
+                defaults.Add(CompressionAlgo.SevenZipDeflate)
+                defaults.Add(CompressionAlgo.Lz4)
+                defaults.Add(CompressionAlgo.Libdeflate)
+            Case "zso"
+                available.UnionWith(Lz4Algos)
+                defaults.Add(CompressionAlgo.Lz4)
+                requireLz4 = True
+            Case "dax"
+                available.UnionWith(DeflateAlgos)
+                defaults.Add(CompressionAlgo.Zlib)
+                defaults.Add(CompressionAlgo.SevenZipDeflate)
+                supportsAltBlock = False
+                requireDeflate = True
+        End Select
+
+        Return New FormatOption(displayName, argumentValue, outputExtension, available, defaults, supportsAltBlock, requireLz4, requireDeflate)
+    End Function
+
+    Private Function GetTrialPoolCheckBox(algo As CompressionAlgo) As CheckBox
+        Select Case algo
+            Case CompressionAlgo.Zlib : Return UseZlib
+            Case CompressionAlgo.Zopfli : Return UseZopfli
+            Case CompressionAlgo.SevenZipDeflate : Return Use7zDeflate
+            Case CompressionAlgo.Lz4 : Return UseLz4
+            Case CompressionAlgo.Lz4Brute : Return UseLz4Brute
+            Case CompressionAlgo.Libdeflate : Return UseLibdeflate
+        End Select
+        Return Nothing
+    End Function
+
+    Private Iterator Function AllAlgos() As IEnumerable(Of CompressionAlgo)
+        Yield CompressionAlgo.Zlib
+        Yield CompressionAlgo.Zopfli
+        Yield CompressionAlgo.SevenZipDeflate
+        Yield CompressionAlgo.Lz4
+        Yield CompressionAlgo.Lz4Brute
+        Yield CompressionAlgo.Libdeflate
+    End Function
+
+    Private Sub ApplyFormatDefaultsToTrialPool()
+        Dim selectedFormat As FormatOption = TryCast(FormatSelection.SelectedItem, FormatOption)
+        If selectedFormat Is Nothing Then
+            Return
+        End If
+
+        _suppressPoolEvents = True
+        Try
+            For Each algo As CompressionAlgo In AllAlgos()
+                GetTrialPoolCheckBox(algo).Checked = selectedFormat.Defaults.Contains(algo)
+            Next
+        Finally
+            _suppressPoolEvents = False
+        End Try
+    End Sub
+
+    Private Function CountCheckedDeflate() As Integer
+        Dim count As Integer = 0
+        For Each algo As CompressionAlgo In DeflateAlgos
+            If GetTrialPoolCheckBox(algo).Checked Then
+                count += 1
+            End If
+        Next
+        Return count
+    End Function
+
+    Private Function CountCheckedTotal() As Integer
+        Dim count As Integer = 0
+        For Each algo As CompressionAlgo In AllAlgos()
+            If GetTrialPoolCheckBox(algo).Checked Then
+                count += 1
+            End If
+        Next
+        Return count
+    End Function
 
     Private Function GetSelectedThreadCount() As Integer
         Dim selectedThread As ThreadOption = TryCast(ThreadSelection.SelectedItem, ThreadOption)
@@ -184,12 +299,13 @@ Public Class maxcsoGUI
             ThreadSelection.SelectedIndex = ThreadSelection.Items.Count - 1
         End If
 
-        FormatSelection.Items.Add(New FormatOption("CSO v1 (.cso)", "cso1", ".cso", True, True, True, False, False))
-        FormatSelection.Items.Add(New FormatOption("CSO v2 (.cso)", "cso2", ".cso", True, True, True, True, True))
-        FormatSelection.Items.Add(New FormatOption("ZSO (.zso)", "zso", ".zso", False, True, False, True, False))
-        FormatSelection.Items.Add(New FormatOption("DAX (.dax)", "dax", ".dax", True, False, True, False, False))
+        FormatSelection.Items.Add(BuildFormatOption("CSO v1 (.cso)", "cso1", ".cso"))
+        FormatSelection.Items.Add(BuildFormatOption("CSO v2 (.cso)", "cso2", ".cso"))
+        FormatSelection.Items.Add(BuildFormatOption("ZSO (.zso)", "zso", ".zso"))
+        FormatSelection.Items.Add(BuildFormatOption("DAX (.dax)", "dax", ".dax"))
         FormatSelection.SelectedIndex = 0
 
+        ApplyFormatDefaultsToTrialPool()
         UpdateCompressionOptionState()
 
         Dim cursorPath As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Cursors", "aero_copy.cur")
@@ -275,9 +391,12 @@ Public Class maxcsoGUI
             .ThreadCount = GetSelectedThreadCount(),
             .Format = selectedFormat,
             .Fast = Fast.Checked,
-            .UseZopfli = Zopfli.Checked,
-            .UseLibdeflate = UseLibdeflate.Checked,
+            .UseZlib = UseZlib.Checked,
+            .UseZopfli = UseZopfli.Checked,
+            .Use7zDeflate = Use7zDeflate.Checked,
+            .UseLz4 = UseLz4.Checked,
             .UseLz4Brute = UseLz4Brute.Checked,
+            .UseLibdeflate = UseLibdeflate.Checked,
             .Decompress = IsDecompressModeSelected(),
             .CrcOnly = CrcOnly.Checked,
             .MeasureOnly = MeasureOnly.Checked,
@@ -425,7 +544,71 @@ Public Class maxcsoGUI
         UpdateCompressionOptionState()
     End Sub
 
-    Private Sub Zopfli_CheckedChanged(sender As Object, e As EventArgs) Handles Zopfli.CheckedChanged
+    Private Sub UseZlib_CheckedChanged(sender As Object, e As EventArgs) Handles UseZlib.CheckedChanged
+        HandleAlgorithmToggle(CompressionAlgo.Zlib)
+    End Sub
+
+    Private Sub UseZopfli_CheckedChanged(sender As Object, e As EventArgs) Handles UseZopfli.CheckedChanged
+        HandleAlgorithmToggle(CompressionAlgo.Zopfli)
+    End Sub
+
+    Private Sub Use7zDeflate_CheckedChanged(sender As Object, e As EventArgs) Handles Use7zDeflate.CheckedChanged
+        HandleAlgorithmToggle(CompressionAlgo.SevenZipDeflate)
+    End Sub
+
+    Private Sub UseLz4_CheckedChanged(sender As Object, e As EventArgs) Handles UseLz4.CheckedChanged
+        HandleAlgorithmToggle(CompressionAlgo.Lz4)
+    End Sub
+
+    Private Sub UseLz4Brute_CheckedChanged(sender As Object, e As EventArgs) Handles UseLz4Brute.CheckedChanged
+        HandleAlgorithmToggle(CompressionAlgo.Lz4Brute)
+    End Sub
+
+    Private Sub UseLibdeflate_CheckedChanged(sender As Object, e As EventArgs) Handles UseLibdeflate.CheckedChanged
+        HandleAlgorithmToggle(CompressionAlgo.Libdeflate)
+    End Sub
+
+    Private Sub HandleAlgorithmToggle(algo As CompressionAlgo)
+        If _suppressPoolEvents Then
+            Return
+        End If
+
+        Dim selectedFormat As FormatOption = TryCast(FormatSelection.SelectedItem, FormatOption)
+        Dim cb As CheckBox = GetTrialPoolCheckBox(algo)
+
+        ' Reject illegal unchecks (format mandates).
+        If Not cb.Checked Then
+            Dim mustReCheck As Boolean = False
+
+            If selectedFormat IsNot Nothing AndAlso selectedFormat.RequireLz4 AndAlso algo = CompressionAlgo.Lz4 Then
+                mustReCheck = True
+            ElseIf selectedFormat IsNot Nothing AndAlso selectedFormat.RequireDeflate AndAlso DeflateAlgos.Contains(algo) AndAlso CountCheckedDeflate() = 0 Then
+                mustReCheck = True
+            ElseIf CountCheckedTotal() = 0 Then
+                mustReCheck = True
+            End If
+
+            If mustReCheck Then
+                _suppressPoolEvents = True
+                Try
+                    cb.Checked = True
+                Finally
+                    _suppressPoolEvents = False
+                End Try
+                Return
+            End If
+        End If
+
+        ' LZ4 Brute requires LZ4 to be checked. If LZ4 was just unchecked, also uncheck LZ4 Brute.
+        If algo = CompressionAlgo.Lz4 AndAlso Not cb.Checked AndAlso UseLz4Brute.Checked Then
+            _suppressPoolEvents = True
+            Try
+                UseLz4Brute.Checked = False
+            Finally
+                _suppressPoolEvents = False
+            End Try
+        End If
+
         UpdateCompressionOptionState()
     End Sub
 
@@ -482,37 +665,39 @@ Public Class maxcsoGUI
     End Sub
 
     Private Sub FormatSelection_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FormatSelection.SelectedIndexChanged
+        ApplyFormatDefaultsToTrialPool()
         UpdateCompressionOptionState()
     End Sub
 
     Private Sub UpdateCompressionOptionState()
         Dim selectedFormat As FormatOption = TryCast(FormatSelection.SelectedItem, FormatOption)
         Dim isDecompressMode As Boolean = IsDecompressModeSelected()
-        Dim supportsZopfli As Boolean = selectedFormat Is Nothing OrElse selectedFormat.SupportsZopfli
         Dim supportsAltBlockSize As Boolean = selectedFormat Is Nothing OrElse selectedFormat.SupportsAltBlockSize
-        Dim supportsLibdeflate As Boolean = selectedFormat IsNot Nothing AndAlso selectedFormat.SupportsLibdeflate
-        Dim supportsLz4Brute As Boolean = selectedFormat IsNot Nothing AndAlso selectedFormat.SupportsLz4Brute
-        Dim supportsLz4Cost As Boolean = selectedFormat IsNot Nothing AndAlso selectedFormat.SupportsLz4Cost
         Dim isReadOnlyMode As Boolean = CrcOnly.Checked OrElse MeasureOnly.Checked
+        Dim trialPoolDisabled As Boolean = isDecompressMode OrElse CrcOnly.Checked OrElse Fast.Checked
 
-        If Not supportsZopfli AndAlso Zopfli.Checked Then
-            Zopfli.Checked = False
+        ' Auto-uncheck any algorithm that is no longer compatible with the selected format.
+        If selectedFormat IsNot Nothing Then
+            _suppressPoolEvents = True
+            Try
+                For Each algo As CompressionAlgo In AllAlgos()
+                    Dim cb As CheckBox = GetTrialPoolCheckBox(algo)
+                    If Not selectedFormat.Available.Contains(algo) AndAlso cb.Checked Then
+                        cb.Checked = False
+                    End If
+                Next
+
+                ' lz4brute implies lz4 must be on. If lz4 is off but lz4brute is on, fix it.
+                If UseLz4Brute.Checked AndAlso Not UseLz4.Checked Then
+                    UseLz4Brute.Checked = False
+                End If
+            Finally
+                _suppressPoolEvents = False
+            End Try
         End If
 
         If Not supportsAltBlockSize AndAlso BlockSize.Checked Then
             BlockSize.Checked = False
-        End If
-
-        If Not supportsLibdeflate AndAlso UseLibdeflate.Checked Then
-            UseLibdeflate.Checked = False
-        End If
-
-        If Not supportsLz4Brute AndAlso UseLz4Brute.Checked Then
-            UseLz4Brute.Checked = False
-        End If
-
-        If Not supportsLz4Cost AndAlso Lz4Cost.Checked Then
-            Lz4Cost.Checked = False
         End If
 
         If isReadOnlyMode AndAlso DeleteCheck.Checked Then
@@ -529,8 +714,7 @@ Public Class maxcsoGUI
         End If
 
         FormatSelection.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked
-        Fast.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso Not Zopfli.Checked
-        Zopfli.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso Not Fast.Checked AndAlso supportsZopfli
+        Fast.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked
         BlockSize.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso supportsAltBlockSize
         BlockText.Enabled = BlockSize.Enabled AndAlso BlockSize.Checked
         ModeSelection.Enabled = Not isReadOnlyMode
@@ -539,11 +723,29 @@ Public Class maxcsoGUI
         Browse.Enabled = CustDir.Checked AndAlso CustDir.Enabled
         CustOut.Enabled = CustDir.Checked AndAlso CustDir.Enabled
 
-        UseLibdeflate.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso supportsLibdeflate
-        UseLz4Brute.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso supportsLz4Brute
-        OrigCost.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked
+        ' Enable/disable algorithm checkboxes based on format availability and global mode.
+        For Each algo As CompressionAlgo In AllAlgos()
+            Dim cb As CheckBox = GetTrialPoolCheckBox(algo)
+            Dim availableForFormat As Boolean = selectedFormat IsNot Nothing AndAlso selectedFormat.Available.Contains(algo)
+            cb.Enabled = availableForFormat AndAlso Not trialPoolDisabled
+        Next
+
+        ' LZ4 Brute is only meaningful if LZ4 is on.
+        If UseLz4Brute.Enabled AndAlso Not UseLz4.Checked Then
+            UseLz4Brute.Enabled = False
+        End If
+
+        ' If the format mandates LZ4 (ZSO), lock the LZ4 checkbox in the checked state.
+        If selectedFormat IsNot Nothing AndAlso selectedFormat.RequireLz4 Then
+            UseLz4.Enabled = False
+        End If
+
+        Dim anyDeflateChecked As Boolean = (CountCheckedDeflate() > 0)
+        Dim anyLz4Checked As Boolean = (UseLz4.Checked OrElse UseLz4Brute.Checked)
+
+        OrigCost.Enabled = Not trialPoolDisabled AndAlso anyDeflateChecked
         OrigCostText.Enabled = OrigCost.Enabled AndAlso OrigCost.Checked
-        Lz4Cost.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso supportsLz4Cost
+        Lz4Cost.Enabled = Not trialPoolDisabled AndAlso anyLz4Checked
         Lz4CostText.Enabled = Lz4Cost.Enabled AndAlso Lz4Cost.Checked
     End Sub
 
@@ -784,9 +986,12 @@ Public Class maxcsoGUI
         request.Threads = settings.ThreadCount
         request.Format = GetNativeFormat(settings.Format)
         request.Fast = settings.Fast
+        request.UseZlib = settings.UseZlib
         request.UseZopfli = settings.UseZopfli
-        request.UseLibdeflate = settings.UseLibdeflate
+        request.Use7zDeflate = settings.Use7zDeflate
+        request.UseLz4 = settings.UseLz4
         request.UseLz4Brute = settings.UseLz4Brute
+        request.UseLibdeflate = settings.UseLibdeflate
         request.Decompress = settings.Decompress
         request.CrcOnly = settings.CrcOnly
         request.MeasureOnly = settings.MeasureOnly
@@ -839,21 +1044,18 @@ Public Class maxcsoGUI
             arguments.Add("--fast")
         End If
 
-        If settings.UseZopfli Then
-            arguments.Add("--use-zopfli")
-        End If
-
         If settings.BlockSizeEnabled Then
             arguments.Add("--block=" & settings.BlockSize.ToString())
         End If
 
-        If settings.UseLibdeflate Then
-            arguments.Add("--use-libdeflate")
-        End If
-
-        If settings.UseLz4Brute Then
-            arguments.Add("--use-lz4brute")
-        End If
+        ' Emit explicit enable/disable for each of the six trial-pool methods so the CLI run
+        ' mirrors the GUI's trial-pool selection regardless of CLI defaults.
+        arguments.Add(If(settings.UseZlib, "--use-zlib", "--no-zlib"))
+        arguments.Add(If(settings.UseZopfli, "--use-zopfli", "--no-zopfli"))
+        arguments.Add(If(settings.Use7zDeflate, "--use-7zdeflate", "--no-7zdeflate"))
+        arguments.Add(If(settings.UseLz4, "--use-lz4", "--no-lz4"))
+        arguments.Add(If(settings.UseLz4Brute, "--use-lz4brute", "--no-lz4brute"))
+        arguments.Add(If(settings.UseLibdeflate, "--use-libdeflate", "--no-libdeflate"))
 
         If settings.OrigCostEnabled Then
             arguments.Add("--orig-cost=" & settings.OrigCostPercent.ToString(Globalization.CultureInfo.InvariantCulture))

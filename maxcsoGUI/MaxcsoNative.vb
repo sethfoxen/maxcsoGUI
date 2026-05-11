@@ -25,11 +25,17 @@ Friend Structure NativeBridgeRequest
     <MarshalAs(UnmanagedType.Bool)>
     Public Fast As Boolean
     <MarshalAs(UnmanagedType.Bool)>
+    Public UseZlib As Boolean
+    <MarshalAs(UnmanagedType.Bool)>
     Public UseZopfli As Boolean
     <MarshalAs(UnmanagedType.Bool)>
-    Public UseLibdeflate As Boolean
+    Public Use7zDeflate As Boolean
+    <MarshalAs(UnmanagedType.Bool)>
+    Public UseLz4 As Boolean
     <MarshalAs(UnmanagedType.Bool)>
     Public UseLz4Brute As Boolean
+    <MarshalAs(UnmanagedType.Bool)>
+    Public UseLibdeflate As Boolean
     <MarshalAs(UnmanagedType.Bool)>
     Public Decompress As Boolean
     <MarshalAs(UnmanagedType.Bool)>

@@ -21,9 +21,12 @@ struct MaxcsoBridgeRequest {
 	int threads;
 	MaxcsoBridgeFormat format;
 	int fast;
+	int use_zlib;
 	int use_zopfli;
-	int use_libdeflate;
+	int use_7zdeflate;
+	int use_lz4;
 	int use_lz4brute;
+	int use_libdeflate;
 	int decompress;
 	int crc_only;
 	int measure_only;

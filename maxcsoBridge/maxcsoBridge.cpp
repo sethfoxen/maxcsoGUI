@@ -148,6 +148,10 @@ void UpdateThreadpoolSize(int threads) {
 
 }  // namespace
 
+extern "C" MAXCSOBRIDGE_API int __stdcall MaxcsoBridgeGetVersion() {
+	return MAXCSO_BRIDGE_VERSION;
+}
+
 extern "C" MAXCSOBRIDGE_API int __stdcall MaxcsoBridgeProcess(const MaxcsoBridgeRequest *request, MaxcsoBridgeProgressCallback progressCallback, void *userData, wchar_t *messageBuffer, int messageBufferChars) {
 	if (request == nullptr) {
 		SetMessageBuffer(messageBuffer, messageBufferChars, L"No request was provided.");

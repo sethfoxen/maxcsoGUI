@@ -37,6 +37,7 @@ Partial Class maxcsoGUI
         Me.ThreadSelection = New System.Windows.Forms.ComboBox()
         Me.CrcOnly = New System.Windows.Forms.CheckBox()
         Me.MeasureOnly = New System.Windows.Forms.CheckBox()
+        Me.PoolHelpLabel = New System.Windows.Forms.Label()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.UseZlib = New System.Windows.Forms.CheckBox()
         Me.UseZopfli = New System.Windows.Forms.CheckBox()
@@ -211,7 +212,7 @@ Partial Class maxcsoGUI
         Me.GroupBox2.Size = New System.Drawing.Size(454, 96)
         Me.GroupBox2.TabIndex = 6
         Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Compression Algorithm Trial Pool"
+        Me.GroupBox2.Text = "Compression Algorithms to Try"
         '
         'UseZlib
         '
@@ -327,6 +328,17 @@ Partial Class maxcsoGUI
         Me.Lz4CostText.TabIndex = 10
         Me.Lz4CostText.Text = "0"
         '
+        'PoolHelpLabel
+        '
+        Me.PoolHelpLabel.AutoSize = True
+        Me.PoolHelpLabel.Text = "(?)"
+        Me.PoolHelpLabel.ForeColor = System.Drawing.Color.Blue
+        Me.PoolHelpLabel.Location = New System.Drawing.Point(447, 101)
+        Me.PoolHelpLabel.Name = "PoolHelpLabel"
+        Me.PoolHelpLabel.TabIndex = 11
+        Me.ToolTip1.SetToolTip(Me.PoolHelpLabel, "For each block of the ISO, maxcso compresses it with every enabled algorithm below and keeps whichever result is smallest." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) &
+            "Blocks are evaluated independently — each ends up stored with whichever algorithm worked best on that specific data.")
+        '
         'MeasureOnly
         '
         Me.MeasureOnly.AutoSize = True
@@ -426,6 +438,7 @@ Partial Class maxcsoGUI
         Me.Controls.Add(Me.ProgressPercent)
         Me.Controls.Add(Me.ConversionProgress)
         Me.Controls.Add(Me.ProgressText)
+        Me.Controls.Add(Me.PoolHelpLabel)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.DropHelp)
         Me.Controls.Add(Me.Convert)
@@ -479,4 +492,5 @@ Partial Class maxcsoGUI
     Friend WithEvents Browse As Button
     Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
     Friend WithEvents CustOut As TextBox
+    Friend WithEvents PoolHelpLabel As Label
 End Class

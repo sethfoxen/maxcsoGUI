@@ -55,6 +55,7 @@ End Structure
 
 Friend Module MaxcsoNative
     Private Const BridgeLibraryName As String = "maxcsoBridge.dll"
+    Private Const ExpectedBridgeVersion As Integer = 2  ' Must match MAXCSO_BRIDGE_VERSION in maxcsoBridge.h
     Private libraryHandle As IntPtr = IntPtr.Zero
     Private bridgeDelegate As MaxcsoBridgeProcessDelegate = Nothing
     Private loadedLibraryPath As String = String.Empty
@@ -70,6 +71,9 @@ Friend Module MaxcsoNative
     <DllImport("kernel32.dll", CharSet:=CharSet.Ansi, SetLastError:=True)>
     Private Function GetProcAddress(hModule As IntPtr, procName As String) As IntPtr
     End Function
+
+    <UnmanagedFunctionPointer(CallingConvention.StdCall)>
+    Private Delegate Function MaxcsoBridgeGetVersionDelegate() As Integer
 
     <UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet:=CharSet.Unicode)>
     Private Delegate Function MaxcsoBridgeProcessDelegate(ByRef request As NativeBridgeRequest, progressCallback As MaxcsoBridgeProgressDelegate, userData As IntPtr, messageBuffer As StringBuilder, messageBufferChars As Integer) As Integer
@@ -134,8 +138,9 @@ Friend Module MaxcsoNative
             Return NativeBridgeRunResult.Unavailable
         End If
 
-        If Not EnsureBridgeLoaded(libraryPath, failureDetails) Then
-            Return NativeBridgeRunResult.Unavailable
+        Dim loadResult As NativeBridgeRunResult = EnsureBridgeLoaded(libraryPath, failureDetails)
+        If loadResult <> NativeBridgeRunResult.Success Then
+            Return loadResult
         End If
 
         Dim messageBuffer As New StringBuilder(2048)
@@ -166,9 +171,9 @@ Friend Module MaxcsoNative
         End Try
     End Function
 
-    Private Function EnsureBridgeLoaded(libraryPath As String, ByRef failureDetails As String) As Boolean
+    Private Function EnsureBridgeLoaded(libraryPath As String, ByRef failureDetails As String) As NativeBridgeRunResult
         If bridgeDelegate IsNot Nothing AndAlso String.Equals(loadedLibraryPath, libraryPath, StringComparison.OrdinalIgnoreCase) Then
-            Return True
+            Return NativeBridgeRunResult.Success
         End If
 
         If libraryHandle <> IntPtr.Zero Then
@@ -181,7 +186,28 @@ Friend Module MaxcsoNative
         libraryHandle = LoadLibrary(libraryPath)
         If libraryHandle = IntPtr.Zero Then
             failureDetails = "Could not load " & libraryPath
-            Return False
+            Return NativeBridgeRunResult.Unavailable
+        End If
+
+        Dim getVersionPtr As IntPtr = GetProcAddress(libraryHandle, "MaxcsoBridgeGetVersion")
+        If getVersionPtr = IntPtr.Zero Then
+            failureDetails = "The bridge DLL at """ & libraryPath & """ does not export MaxcsoBridgeGetVersion." & Environment.NewLine &
+                             "This DLL is out of date. Rebuild maxcsoBridge in Release|x64 and try again." & Environment.NewLine &
+                             "See BUILDING.md for instructions."
+            FreeLibrary(libraryHandle)
+            libraryHandle = IntPtr.Zero
+            Return NativeBridgeRunResult.Failed
+        End If
+
+        Dim getVersionFn = CType(Marshal.GetDelegateForFunctionPointer(getVersionPtr, GetType(MaxcsoBridgeGetVersionDelegate)), MaxcsoBridgeGetVersionDelegate)
+        Dim actualVersion As Integer = getVersionFn()
+        If actualVersion <> ExpectedBridgeVersion Then
+            failureDetails = "The bridge DLL at """ & libraryPath & """ reports ABI version " & actualVersion &
+                             " but this GUI requires version " & ExpectedBridgeVersion & "." & Environment.NewLine &
+                             "Rebuild maxcsoBridge in Release|x64 to match. See BUILDING.md for instructions."
+            FreeLibrary(libraryHandle)
+            libraryHandle = IntPtr.Zero
+            Return NativeBridgeRunResult.Failed
         End If
 
         Dim processPtr As IntPtr = ResolveBridgeEntryPoint(libraryHandle)
@@ -189,12 +215,12 @@ Friend Module MaxcsoNative
             failureDetails = "Could not find MaxcsoBridgeProcess in " & libraryPath
             FreeLibrary(libraryHandle)
             libraryHandle = IntPtr.Zero
-            Return False
+            Return NativeBridgeRunResult.Unavailable
         End If
 
         bridgeDelegate = CType(Marshal.GetDelegateForFunctionPointer(processPtr, GetType(MaxcsoBridgeProcessDelegate)), MaxcsoBridgeProcessDelegate)
         loadedLibraryPath = libraryPath
-        Return True
+        Return NativeBridgeRunResult.Success
     End Function
 
     Private Function ResolveBridgeEntryPoint(moduleHandle As IntPtr) As IntPtr

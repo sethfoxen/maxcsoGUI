@@ -321,6 +321,10 @@ Public Class maxcsoGUI
 
         _dragFilter = New DragCursorMessageFilter()
         Application.AddMessageFilter(_dragFilter)
+
+        Dim titleWidth As Integer = TextRenderer.MeasureText(GroupBox2.Text, GroupBox2.Font).Width
+        PoolHelpLabel.Left = GroupBox2.Left + titleWidth + 4
+        PoolHelpLabel.Top = GroupBox2.Top + (GroupBox2.Font.Height - PoolHelpLabel.Height) \ 2
     End Sub
 
     Private Sub Form1_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed

@@ -6,6 +6,10 @@
 #define MAXCSOBRIDGE_API __declspec(dllimport)
 #endif
 
+// Bump this whenever the request struct layout or any exported signature changes.
+// Must match ExpectedBridgeVersion in MaxcsoNative.vb.
+#define MAXCSO_BRIDGE_VERSION 2
+
 enum MaxcsoBridgeFormat {
 	MAXCSO_BRIDGE_FMT_CSO1 = 0,
 	MAXCSO_BRIDGE_FMT_CSO2 = 1,
@@ -38,4 +42,5 @@ struct MaxcsoBridgeRequest {
 	double lz4_cost_percent;
 };
 
+extern "C" MAXCSOBRIDGE_API int __stdcall MaxcsoBridgeGetVersion();
 extern "C" MAXCSOBRIDGE_API int __stdcall MaxcsoBridgeProcess(const MaxcsoBridgeRequest *request, MaxcsoBridgeProgressCallback progressCallback, void *userData, wchar_t *messageBuffer, int messageBufferChars);

@@ -212,7 +212,7 @@ Partial Class maxcsoGUI
         Me.GroupBox2.Size = New System.Drawing.Size(454, 96)
         Me.GroupBox2.TabIndex = 6
         Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Compression Algorithms to Try"
+        Me.GroupBox2.Text = "Compression Algorithms Trial Pool"
         '
         'UseZlib
         '

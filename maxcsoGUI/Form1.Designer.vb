@@ -293,7 +293,7 @@ Partial Class maxcsoGUI
         Me.OrigCost.AutoSize = False
         Me.OrigCost.Location = New System.Drawing.Point(10, 73)
         Me.OrigCost.Name = "OrigCost"
-        Me.OrigCost.Size = New System.Drawing.Size(173, 17)
+        Me.OrigCost.Size = New System.Drawing.Size(184, 17)
         Me.OrigCost.TabIndex = 7
         Me.OrigCost.Text = "Uncompressed Size Tolerance %"
         Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow a block to stay uncompressed if it is only up to this percent larger than the smallest compressed result." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for faster reads/decompression.)")
@@ -302,7 +302,7 @@ Partial Class maxcsoGUI
         'OrigCostText
         '
         Me.OrigCostText.Enabled = False
-        Me.OrigCostText.Location = New System.Drawing.Point(185, 71)
+        Me.OrigCostText.Location = New System.Drawing.Point(196, 71)
         Me.OrigCostText.Name = "OrigCostText"
         Me.OrigCostText.Size = New System.Drawing.Size(30, 20)
         Me.OrigCostText.TabIndex = 8

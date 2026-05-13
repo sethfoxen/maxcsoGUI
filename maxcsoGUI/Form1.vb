@@ -851,6 +851,12 @@ Public Class maxcsoGUI
         OrigCostText.Enabled = OrigCost.Enabled AndAlso OrigCost.Checked
         Lz4Cost.Enabled = Not trialPoolDisabled AndAlso anyLz4Checked AndAlso anyDeflateChecked
         Lz4CostText.Enabled = Lz4Cost.Enabled AndAlso Lz4Cost.Checked
+
+        ' Auto-uncheck disabled options so the UI never shows a checked-but-inactive state.
+        If Not Fast.Enabled AndAlso Fast.Checked Then Fast.Checked = False
+        If Not BlockSize.Enabled AndAlso BlockSize.Checked Then BlockSize.Checked = False
+        If Not OrigCost.Enabled AndAlso OrigCost.Checked Then OrigCost.Checked = False
+        If Not Lz4Cost.Enabled AndAlso Lz4Cost.Checked Then Lz4Cost.Checked = False
     End Sub
 
     Private Function RunConversionBatch(jobs As List(Of ConversionJob), settings As ConversionSettings) As ConversionBatchResult

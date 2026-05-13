@@ -9,8 +9,8 @@ This branch's <a href="https://github.com/wad11656/maxcsoGUI/releases/latest">Re
 This GUI version replicates all available flags/options available in the original Command Line <code>maxcso.exe</code> program, including:
 
 - Thread count selection (which now defaults to the maximum available, like the original Command Line app).
-- All available Output formats (`cso1`, `cso2`, `zso`, `dax`)
-- Fast mode, optional [Zopfli](https://github.com/google/zopfli) compression, alternate block size, decompression, and custom output directory
-- Advanced flags for CRC32, measure-only runs, [libdeflate](https://github.com/ebiggers/libdeflate), [LZ4](https://github.com/lz4/lz4) brute force, and cost tuning
+- All available Output formats (`cso1`, `cso2`, `zso`, `dax`).
+- Enable/disable all available algorithms in the Compression Algorithms Trial Pool.
+- Options for fast mode, alternate block size, decompression, CRC32, measure-only runs, cost tuning, and custom output directory.
 
 Thanks to unknownbrackets for maxcso: https://github.com/unknownbrackets/maxcso

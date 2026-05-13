@@ -214,7 +214,12 @@ extern "C" MAXCSOBRIDGE_API int __stdcall MaxcsoBridgeProcess(const MaxcsoBridge
 		}
 
 		char buffer[128];
-		sprintf_s(buffer, "%" PRId64 " / %" PRId64 " bytes (%.0f%%)", pos, total, ratio);
+		if (status == maxcso::TASK_SUCCESS && request->measure_only) {
+			double compressRatio = total <= 0 ? 0.0 : (written * 100.0) / total;
+			sprintf_s(buffer, "%" PRId64 " -> %" PRId64 " bytes (%.1f%%)", total, written, compressRatio);
+		} else {
+			sprintf_s(buffer, "%" PRId64 " / %" PRId64 " bytes (%.0f%%)", pos, total, ratio);
+		}
 		finalMessage = Utf8ToWide(buffer);
 
 		if (percent != lastPercent || status == maxcso::TASK_SUCCESS) {

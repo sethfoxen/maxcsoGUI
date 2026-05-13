@@ -951,7 +951,8 @@ Public Class maxcsoGUI
 
                 If settings.CrcOnly OrElse settings.MeasureOnly Then
                     If Not String.IsNullOrWhiteSpace(successDetails) Then
-                        result.ResultSummary.Add(successDetails.Trim())
+                        Dim summaryLine As String = If(settings.MeasureOnly, FormatMeasureResult(successDetails, job.InputPath), successDetails.Trim())
+                        result.ResultSummary.Add(summaryLine)
                     End If
                 End If
 
@@ -1179,6 +1180,26 @@ Public Class maxcsoGUI
         End If
 
         Return FormatBytes(current) & " / " & FormatBytes(total)
+    End Function
+
+    Private Function FormatMeasureResult(rawMessage As String, inputPath As String) As String
+        Dim trimmed As String = If(rawMessage, String.Empty).Trim()
+        Dim m As System.Text.RegularExpressions.Match = System.Text.RegularExpressions.Regex.Match(
+            trimmed, "(\d+)\s*->\s*(\d+)\s*bytes\s*\(([\d.]+)%\)")
+        If Not m.Success Then
+            Return Path.GetFileName(inputPath) & ": " & trimmed
+        End If
+
+        Dim original As Long
+        Dim compressed As Long
+        If Not Long.TryParse(m.Groups(1).Value, original) OrElse Not Long.TryParse(m.Groups(2).Value, compressed) Then
+            Return Path.GetFileName(inputPath) & ": " & trimmed
+        End If
+
+        Dim ratio As String = m.Groups(3).Value
+        Return Path.GetFileName(inputPath) & Environment.NewLine &
+               "  Original:   " & FormatBytes(original) & Environment.NewLine &
+               "  Compressed: " & FormatBytes(compressed) & " (" & ratio & "% of original)"
     End Function
 
     Private Function FormatBytes(value As Long) As String

@@ -1,7 +1,7 @@
 # maxcsoGUI
 A GUI for maxcso.
 
-<img width="1688" height="614" alt="Image" src="https://github.com/user-attachments/assets/56c53042-6f5e-4bdb-85eb-df2f9fc7e033" />
+<img width="1691" height="615" alt="Image" src="https://github.com/user-attachments/assets/86ba15bb-476b-4aa2-b45e-109bab0ddd44" />
 <br><br>
 maxcso is a Command Line tool that dynamically uses high-quality compression algorithms to shrink (primarily) PSP & PS2 ISO files into a variety of different resulting formats. This program adds a GUI layer on top of it for easier use.
 This branch's <a href="https://github.com/wad11656/maxcsoGUI/releases/latest">Release</a> provides a standalone executable that is pre-bundled with the original <code>maxcso.exe</code> program.

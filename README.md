@@ -13,4 +13,4 @@ This GUI version replicates all available flags/options available in the origina
 - Fast mode, optional [Zopfli](https://github.com/google/zopfli) compression, alternate block size, decompression, and custom output directory
 - Advanced flags for CRC32, measure-only runs, [libdeflate](https://github.com/ebiggers/libdeflate), [LZ4](https://github.com/lz4/lz4) brute force, and cost tuning
 
-Thanks to unknownbrackets for maxcso https://github.com/unknownbrackets/maxcso
+Thanks to unknownbrackets for maxcso: https://github.com/unknownbrackets/maxcso

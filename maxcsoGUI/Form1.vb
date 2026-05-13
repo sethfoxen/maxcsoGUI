@@ -427,13 +427,13 @@ Public Class maxcsoGUI
 
         Dim origCostValue As Double
         If OrigCost.Checked AndAlso Not Double.TryParse(OrigCostText.Text.Trim(), origCostValue) Then
-            MessageBox.Show("Please enter a valid Orig Cost percentage.")
+            MessageBox.Show("Please enter a valid Uncompressed Size Tolerance percentage.")
             Return
         End If
 
         Dim lz4CostValue As Double
         If Lz4Cost.Checked AndAlso Not Double.TryParse(Lz4CostText.Text.Trim(), lz4CostValue) Then
-            MessageBox.Show("Please enter a valid LZ4 Cost percentage.")
+            MessageBox.Show("Please enter a valid LZ4 Size Tolerance percentage.")
             Return
         End If
 

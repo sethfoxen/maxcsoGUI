@@ -296,7 +296,7 @@ Partial Class maxcsoGUI
         Me.OrigCost.Size = New System.Drawing.Size(184, 17)
         Me.OrigCost.TabIndex = 7
         Me.OrigCost.Text = "Uncompressed Size Tolerance %"
-        Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow a block to stay uncompressed if it is only up to this percent larger than the smallest compressed result." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for faster reads — uncompressed blocks skip decompression entirely.)")
+        Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow a block to stay uncompressed if it is only up to this percent larger" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "than the smallest compressed block among the checked algorithms above." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for faster reads — uncompressed blocks skip decompression entirely.)")
         Me.OrigCost.UseVisualStyleBackColor = True
         '
         'OrigCostText

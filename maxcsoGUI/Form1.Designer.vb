@@ -316,7 +316,7 @@ Partial Class maxcsoGUI
         Me.Lz4Cost.Size = New System.Drawing.Size(130, 17)
         Me.Lz4Cost.TabIndex = 9
         Me.Lz4Cost.Text = "LZ4 Size Tolerance %"
-        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow an LZ4-compressed block to be up to this percent larger than the smallest result" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "from the other checked algorithms, and still pick LZ4 — since LZ4 decompresses much faster." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for faster reads/decompression. CSO v2 only.)")
+        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Use the LZ4 compressed block if it's only up to this percent larger than the smallest compressed block among the checked algorithms above." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for faster reads/decompression.)")
         Me.Lz4Cost.UseVisualStyleBackColor = True
         '
         'Lz4CostText

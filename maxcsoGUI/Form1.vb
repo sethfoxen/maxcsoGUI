@@ -207,6 +207,7 @@ Public Class maxcsoGUI
     Private _dragFilter As DragCursorMessageFilter
     Private _copyCursor As Cursor = Nothing
     Private _suppressPoolEvents As Boolean = False
+    Private _fileListToolTipIndex As Integer = -1
     Private _taskbarList As ITaskbarList3 = Nothing
     Private _isTaskbarButtonCreated As Boolean = False
     Private _pendingTaskbarState As TaskbarProgressState = TaskbarProgressState.NoProgress
@@ -323,6 +324,11 @@ Public Class maxcsoGUI
     End Function
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Dim applicationIcon As Icon = AppIconHelper.GetApplicationIcon()
+        If applicationIcon IsNot Nothing Then
+            Me.Icon = applicationIcon
+        End If
+
         ModeSelection.Items.Add(New OperationModeOption("Compress", False))
         ModeSelection.Items.Add(New OperationModeOption("Decompress", True))
         ModeSelection.SelectedIndex = 0
@@ -586,6 +592,39 @@ Public Class maxcsoGUI
     Private Sub FileList_GiveFeedback(sender As Object, e As GiveFeedbackEventArgs) Handles FileList.GiveFeedback
         e.UseDefaultCursors = False
         Cursor.Current = If(e.Effect = DragDropEffects.Copy AndAlso _copyCursor IsNot Nothing, _copyCursor, Cursors.Default)
+    End Sub
+
+    Private Sub FileList_MouseMove(sender As Object, e As MouseEventArgs) Handles FileList.MouseMove
+        Dim itemIndex As Integer = FileList.IndexFromPoint(e.Location)
+        If itemIndex < 0 Then
+            ClearFileListToolTip()
+            Return
+        End If
+
+        Dim itemBounds As Rectangle = FileList.GetItemRectangle(itemIndex)
+        If Not itemBounds.Contains(e.Location) Then
+            ClearFileListToolTip()
+            Return
+        End If
+
+        If _fileListToolTipIndex = itemIndex Then
+            Return
+        End If
+
+        _fileListToolTipIndex = itemIndex
+        ToolTip1.SetToolTip(FileList, FileList.Items(itemIndex).ToString())
+    End Sub
+
+    Private Sub FileList_MouseLeave(sender As Object, e As EventArgs) Handles FileList.MouseLeave
+        ClearFileListToolTip()
+    End Sub
+
+    Private Sub ClearFileListToolTip()
+        If _fileListToolTipIndex >= 0 Then
+            _fileListToolTipIndex = -1
+            ToolTip1.Hide(FileList)
+            ToolTip1.SetToolTip(FileList, String.Empty)
+        End If
     End Sub
 
     Private Sub FileList_DoubleClick(sender As Object, e As EventArgs) Handles FileList.DoubleClick

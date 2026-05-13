@@ -86,7 +86,7 @@ Partial Class maxcsoGUI
         Me.GroupBox1.Controls.Add(Me.Fast)
         Me.GroupBox1.Controls.Add(Me.FormatSelection)
         Me.GroupBox1.Controls.Add(Me.ThreadSelection)
-        Me.GroupBox1.Location = New System.Drawing.Point(299, 0)
+        Me.GroupBox1.Location = New System.Drawing.Point(379, 0)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(454, 98)
         Me.GroupBox1.TabIndex = 2
@@ -207,7 +207,7 @@ Partial Class maxcsoGUI
         Me.GroupBox2.Controls.Add(Me.OrigCostText)
         Me.GroupBox2.Controls.Add(Me.Lz4Cost)
         Me.GroupBox2.Controls.Add(Me.Lz4CostText)
-        Me.GroupBox2.Location = New System.Drawing.Point(299, 101)
+        Me.GroupBox2.Location = New System.Drawing.Point(379, 101)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Size = New System.Drawing.Size(454, 96)
         Me.GroupBox2.TabIndex = 6
@@ -221,7 +221,7 @@ Partial Class maxcsoGUI
         Me.UseZlib.Name = "UseZlib"
         Me.UseZlib.Size = New System.Drawing.Size(78, 17)
         Me.UseZlib.TabIndex = 0
-        Me.UseZlib.Text = "Enable zlib"
+        Me.UseZlib.Text = "zlib"
         Me.ToolTip1.SetToolTip(Me.UseZlib, "Enable trials with zlib for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Default method - broadly compatible with a balanced speed/size trade-off.)")
         Me.UseZlib.UseVisualStyleBackColor = True
         '
@@ -232,7 +232,7 @@ Partial Class maxcsoGUI
         Me.UseZopfli.Name = "UseZopfli"
         Me.UseZopfli.Size = New System.Drawing.Size(88, 17)
         Me.UseZopfli.TabIndex = 1
-        Me.UseZopfli.Text = "Enable Zopfli"
+        Me.UseZopfli.Text = "Zopfli"
         Me.ToolTip1.SetToolTip(Me.UseZopfli, "Enable trials with Zopfli for deflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Significantly slower, uses more memory, marginally smaller files.)")
         Me.UseZopfli.UseVisualStyleBackColor = True
         '
@@ -243,7 +243,7 @@ Partial Class maxcsoGUI
         Me.Use7zDeflate.Name = "Use7zDeflate"
         Me.Use7zDeflate.Size = New System.Drawing.Size(108, 17)
         Me.Use7zDeflate.TabIndex = 2
-        Me.Use7zDeflate.Text = "Enable 7zdeflate"
+        Me.Use7zDeflate.Text = "7zdeflate"
         Me.ToolTip1.SetToolTip(Me.Use7zDeflate, "Enable trials with 7-zip's deflate implementation." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Slow, but often produces smaller deflate output than zlib.)")
         Me.Use7zDeflate.UseVisualStyleBackColor = True
         '
@@ -254,8 +254,8 @@ Partial Class maxcsoGUI
         Me.UseLz4.Name = "UseLz4"
         Me.UseLz4.Size = New System.Drawing.Size(81, 17)
         Me.UseLz4.TabIndex = 3
-        Me.UseLz4.Text = "Enable LZ4"
-        Me.ToolTip1.SetToolTip(Me.UseLz4, "Enable trials with lz4hc for lz4 compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(CSO v2 and ZSO only.)")
+        Me.UseLz4.Text = "LZ4"
+        Me.ToolTip1.SetToolTip(Me.UseLz4, "Trial both default/fast LZ4 and LZ4 High Compression level 16, then keep whichever result is smallest." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(CSO v2 and ZSO only.)")
         Me.UseLz4.UseVisualStyleBackColor = True
         '
         'UseLz4Brute
@@ -265,8 +265,8 @@ Partial Class maxcsoGUI
         Me.UseLz4Brute.Name = "UseLz4Brute"
         Me.UseLz4Brute.Size = New System.Drawing.Size(104, 17)
         Me.UseLz4Brute.TabIndex = 4
-        Me.UseLz4Brute.Text = "Enable LZ4 Brute"
-        Me.ToolTip1.SetToolTip(Me.UseLz4Brute, "Enable bruteforce trials with lz4hc." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Much slower than plain LZ4; requires LZ4 to be enabled.)")
+        Me.UseLz4Brute.Text = "LZ4 Expanded"
+        Me.ToolTip1.SetToolTip(Me.UseLz4Brute, "AKA ""LZ4 Brute"". Add LZ4 High Compression levels 4, 7, 10, and 13 to the trial pool, in case any beat" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "the default/fast trial and High Compression level 16 trial from plain LZ4, then keep the smallest result." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Much slower than plain LZ4; requires LZ4 to be enabled.)")
         Me.UseLz4Brute.UseVisualStyleBackColor = True
         '
         'UseLibdeflate
@@ -276,7 +276,7 @@ Partial Class maxcsoGUI
         Me.UseLibdeflate.Name = "UseLibdeflate"
         Me.UseLibdeflate.Size = New System.Drawing.Size(105, 17)
         Me.UseLibdeflate.TabIndex = 5
-        Me.UseLibdeflate.Text = "Enable libdeflate"
+        Me.UseLibdeflate.Text = "libdeflate"
         Me.ToolTip1.SetToolTip(Me.UseLibdeflate, "Enable trials with libdeflate compression." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Modern, faster deflate alternative; can produce smaller results in some cases.)")
         Me.UseLibdeflate.UseVisualStyleBackColor = True
         '
@@ -367,15 +367,15 @@ Partial Class maxcsoGUI
         Me.FileList.Anchor = System.Windows.Forms.AnchorStyles.Left
         Me.FileList.FormattingEnabled = True
         Me.FileList.ImeMode = System.Windows.Forms.ImeMode.[On]
-        Me.FileList.Location = New System.Drawing.Point(12, 9)
+        Me.FileList.Location = New System.Drawing.Point(12, 6)
         Me.FileList.Name = "FileList"
-        Me.FileList.Size = New System.Drawing.Size(280, 221)
+        Me.FileList.Size = New System.Drawing.Size(360, 239)
         Me.FileList.TabIndex = 4
         Me.FileList.Tag = ""
         '
         'DropHelp
         '
-        Me.DropHelp.Location = New System.Drawing.Point(299, 202)
+        Me.DropHelp.Location = New System.Drawing.Point(379, 202)
         Me.DropHelp.Name = "DropHelp"
         Me.DropHelp.Size = New System.Drawing.Size(454, 28)
         Me.DropHelp.TabIndex = 5
@@ -385,7 +385,7 @@ Partial Class maxcsoGUI
         '
         'ProgressText
         '
-        Me.ProgressText.Location = New System.Drawing.Point(299, 232)
+        Me.ProgressText.Location = New System.Drawing.Point(379, 232)
         Me.ProgressText.Name = "ProgressText"
         Me.ProgressText.Size = New System.Drawing.Size(454, 13)
         Me.ProgressText.TabIndex = 7
@@ -393,14 +393,14 @@ Partial Class maxcsoGUI
         '
         'ConversionProgress
         '
-        Me.ConversionProgress.Location = New System.Drawing.Point(299, 248)
+        Me.ConversionProgress.Location = New System.Drawing.Point(379, 249)
         Me.ConversionProgress.Name = "ConversionProgress"
         Me.ConversionProgress.Size = New System.Drawing.Size(219, 15)
         Me.ConversionProgress.TabIndex = 8
         '
         'Convert
         '
-        Me.Convert.Location = New System.Drawing.Point(522, 243)
+        Me.Convert.Location = New System.Drawing.Point(602, 245)
         Me.Convert.Name = "Convert"
         Me.Convert.Size = New System.Drawing.Size(75, 23)
         Me.Convert.TabIndex = 3
@@ -409,7 +409,7 @@ Partial Class maxcsoGUI
         '
         'ProgressBytes
         '
-        Me.ProgressBytes.Location = New System.Drawing.Point(601, 248)
+        Me.ProgressBytes.Location = New System.Drawing.Point(681, 248)
         Me.ProgressBytes.Name = "ProgressBytes"
         Me.ProgressBytes.Size = New System.Drawing.Size(110, 15)
         Me.ProgressBytes.TabIndex = 10
@@ -417,7 +417,7 @@ Partial Class maxcsoGUI
         '
         'ProgressPercent
         '
-        Me.ProgressPercent.Location = New System.Drawing.Point(715, 248)
+        Me.ProgressPercent.Location = New System.Drawing.Point(795, 248)
         Me.ProgressPercent.Name = "ProgressPercent"
         Me.ProgressPercent.Size = New System.Drawing.Size(40, 15)
         Me.ProgressPercent.TabIndex = 9
@@ -432,7 +432,7 @@ Partial Class maxcsoGUI
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(765, 277)
+        Me.ClientSize = New System.Drawing.Size(845, 277)
         Me.Controls.Add(Me.FileList)
         Me.Controls.Add(Me.ProgressBytes)
         Me.Controls.Add(Me.ProgressPercent)

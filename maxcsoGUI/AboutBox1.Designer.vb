@@ -134,8 +134,9 @@ Partial Class AboutBox1
         Me.LabelDescription.Name = "LabelDescription"
         Me.LabelDescription.Size = New System.Drawing.Size(247, 80)
         Me.LabelDescription.TabIndex = 0
-        Me.LabelDescription.Text = "maxcsoGUI includes the maxcso engine directly, so no separate maxcso.exe download is required." &
-            " Drag ISO files into the window, choose your options, and run the conversion from the app." &
+        Me.LabelDescription.Text = "Compresses PSP && PS2 ISOs. maxcsoGUI includes the maxcso engine directly, so no " &
+            "separate maxcso.exe download is required. Drag ISO files into the window, choose your " &
+            "options, and run the conversion from the app." &
             " Double-click an ISO to remove it from the list."
         Me.LabelDescription.UseCompatibleTextRendering = True
         '

@@ -641,6 +641,12 @@ Public Class maxcsoGUI
     End Sub
 
     Private Sub Fast_CheckedChanged(sender As Object, e As EventArgs) Handles Fast.CheckedChanged
+        ' When the user turns Fast off while still in compress mode, restore the format's default
+        ' trial pool (same effect as re-selecting the current format). Skip if Fast was auto-unchecked
+        ' because CRC32 Only or decompress mode took over — those modes preserve pool state.
+        If Not Fast.Checked AndAlso Not CrcOnly.Checked AndAlso Not IsDecompressModeSelected() Then
+            ApplyFormatDefaultsToTrialPool()
+        End If
         UpdateCompressionOptionState()
     End Sub
 

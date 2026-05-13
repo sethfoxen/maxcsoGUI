@@ -1,5 +1,5 @@
 # maxcsoGUI
-A GUI for maxcso.
+A Windows GUI for maxcso.
 
 <img width="1691" height="615" alt="Image" src="https://github.com/user-attachments/assets/86ba15bb-476b-4aa2-b45e-109bab0ddd44" />
 <br><br>

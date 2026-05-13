@@ -296,7 +296,7 @@ Partial Class maxcsoGUI
         Me.OrigCost.Size = New System.Drawing.Size(76, 17)
         Me.OrigCost.TabIndex = 7
         Me.OrigCost.Text = "Orig Cost %"
-        Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow uncompressed data to increase block size by this percent at most.")
+        Me.ToolTip1.SetToolTip(Me.OrigCost, "Allow a block to stay uncompressed if it is only up to this percent larger than the smallest compressed result." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for faster reads/decompression.)")
         Me.OrigCost.UseVisualStyleBackColor = True
         '
         'OrigCostText
@@ -316,7 +316,7 @@ Partial Class maxcsoGUI
         Me.Lz4Cost.Size = New System.Drawing.Size(74, 17)
         Me.Lz4Cost.TabIndex = 9
         Me.Lz4Cost.Text = "LZ4 Cost %"
-        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow lz4 to increase block size by this percent at most." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(CSO v2 and ZSO only.)")
+        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow an LZ4-compressed block to be up to this percent larger than the smallest deflate result, if LZ4 would be faster to read/decompress." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for speed. CSO v2 and ZSO only.)")
         Me.Lz4Cost.UseVisualStyleBackColor = True
         '
         'Lz4CostText

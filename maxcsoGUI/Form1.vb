@@ -778,7 +778,7 @@ Public Class maxcsoGUI
         Dim isDecompressMode As Boolean = IsDecompressModeSelected()
         Dim supportsAltBlockSize As Boolean = selectedFormat Is Nothing OrElse selectedFormat.SupportsAltBlockSize
         Dim isReadOnlyMode As Boolean = CrcOnly.Checked OrElse MeasureOnly.Checked
-        Dim trialPoolDisabled As Boolean = isDecompressMode OrElse CrcOnly.Checked OrElse Fast.Checked
+        Dim trialPoolDisabled As Boolean = isDecompressMode OrElse CrcOnly.Checked
 
         ' Auto-uncheck any algorithm that is no longer compatible with the selected format.
         If selectedFormat IsNot Nothing Then
@@ -794,6 +794,27 @@ Public Class maxcsoGUI
                 ' lz4brute implies lz4 must be on. If lz4 is off but lz4brute is on, fix it.
                 If UseLz4Brute.Checked AndAlso Not UseLz4.Checked Then
                     UseLz4Brute.Checked = False
+                End If
+            Finally
+                _suppressPoolEvents = False
+            End Try
+        End If
+
+        ' Fast Mode (maxcso --fast) forces off the HC/slow variants but leaves basic zlib + basic LZ4
+        ' user-toggleable. Uncheck the slow algos; if that empties the pool, fall back to zlib (or LZ4).
+        If Fast.Checked Then
+            _suppressPoolEvents = True
+            Try
+                If UseZopfli.Checked Then UseZopfli.Checked = False
+                If Use7zDeflate.Checked Then Use7zDeflate.Checked = False
+                If UseLz4Brute.Checked Then UseLz4Brute.Checked = False
+                If UseLibdeflate.Checked Then UseLibdeflate.Checked = False
+                If CountCheckedTotal() = 0 AndAlso selectedFormat IsNot Nothing Then
+                    If selectedFormat.Available.Contains(CompressionAlgo.Zlib) Then
+                        UseZlib.Checked = True
+                    ElseIf selectedFormat.Available.Contains(CompressionAlgo.Lz4) Then
+                        UseLz4.Checked = True
+                    End If
                 End If
             Finally
                 _suppressPoolEvents = False
@@ -828,10 +849,12 @@ Public Class maxcsoGUI
         CustOut.Enabled = CustDir.Checked AndAlso CustDir.Enabled
 
         ' Enable/disable algorithm checkboxes based on format availability and global mode.
+        ' Fast Mode disables the HC/slow variants per algorithm but leaves basic zlib + basic LZ4 toggleable.
         For Each algo As CompressionAlgo In AllAlgos()
             Dim cb As CheckBox = GetTrialPoolCheckBox(algo)
             Dim availableForFormat As Boolean = selectedFormat IsNot Nothing AndAlso selectedFormat.Available.Contains(algo)
-            cb.Enabled = availableForFormat AndAlso Not trialPoolDisabled
+            Dim disabledByFast As Boolean = Fast.Checked AndAlso (algo = CompressionAlgo.Zopfli OrElse algo = CompressionAlgo.SevenZipDeflate OrElse algo = CompressionAlgo.Lz4Brute OrElse algo = CompressionAlgo.Libdeflate)
+            cb.Enabled = availableForFormat AndAlso Not trialPoolDisabled AndAlso Not disabledByFast
         Next
 
         ' LZ4 Brute is only meaningful if LZ4 is on.

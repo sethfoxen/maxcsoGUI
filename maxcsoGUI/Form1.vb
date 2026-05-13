@@ -847,9 +847,9 @@ Public Class maxcsoGUI
         Dim anyDeflateChecked As Boolean = (CountCheckedDeflate() > 0)
         Dim anyLz4Checked As Boolean = (UseLz4.Checked OrElse UseLz4Brute.Checked)
 
-        OrigCost.Enabled = Not trialPoolDisabled AndAlso anyDeflateChecked
+        OrigCost.Enabled = Not trialPoolDisabled AndAlso (anyDeflateChecked OrElse anyLz4Checked)
         OrigCostText.Enabled = OrigCost.Enabled AndAlso OrigCost.Checked
-        Lz4Cost.Enabled = Not trialPoolDisabled AndAlso anyLz4Checked
+        Lz4Cost.Enabled = Not trialPoolDisabled AndAlso anyLz4Checked AndAlso anyDeflateChecked
         Lz4CostText.Enabled = Lz4Cost.Enabled AndAlso Lz4Cost.Checked
     End Sub
 

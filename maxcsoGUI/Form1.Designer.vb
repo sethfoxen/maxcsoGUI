@@ -302,7 +302,7 @@ Partial Class maxcsoGUI
         'OrigCostText
         '
         Me.OrigCostText.Enabled = False
-        Me.OrigCostText.Location = New System.Drawing.Point(220, 71)
+        Me.OrigCostText.Location = New System.Drawing.Point(210, 71)
         Me.OrigCostText.Name = "OrigCostText"
         Me.OrigCostText.Size = New System.Drawing.Size(30, 20)
         Me.OrigCostText.TabIndex = 8
@@ -311,18 +311,18 @@ Partial Class maxcsoGUI
         'Lz4Cost
         '
         Me.Lz4Cost.AutoSize = True
-        Me.Lz4Cost.Location = New System.Drawing.Point(255, 73)
+        Me.Lz4Cost.Location = New System.Drawing.Point(263, 73)
         Me.Lz4Cost.Name = "Lz4Cost"
         Me.Lz4Cost.Size = New System.Drawing.Size(150, 17)
         Me.Lz4Cost.TabIndex = 9
         Me.Lz4Cost.Text = "LZ4 Size Tolerance %"
-        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow an LZ4-compressed block to be up to this percent larger than the smallest deflate result, if LZ4 would be faster to read/decompress." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for speed. CSO v2 and ZSO only.)")
+        Me.ToolTip1.SetToolTip(Me.Lz4Cost, "Allow an LZ4-compressed block to be up to this percent larger than the smallest result from the other checked algorithms, and still pick LZ4 — since LZ4 decompresses much faster." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "(Trades a little file size for speed. CSO v2 only.)")
         Me.Lz4Cost.UseVisualStyleBackColor = True
         '
         'Lz4CostText
         '
         Me.Lz4CostText.Enabled = False
-        Me.Lz4CostText.Location = New System.Drawing.Point(412, 71)
+        Me.Lz4CostText.Location = New System.Drawing.Point(414, 71)
         Me.Lz4CostText.Name = "Lz4CostText"
         Me.Lz4CostText.Size = New System.Drawing.Size(30, 20)
         Me.Lz4CostText.TabIndex = 10

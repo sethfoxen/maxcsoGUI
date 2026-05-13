@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **Visual Studio 2022** (Community or higher)
+- **Visual Studio 2022 or newer** (Community or higher)
   - Workload: **Desktop development with C++**
   - Individual component: **.NET Framework 4.8 development tools** (or the full .NET Framework targeting pack)
 - **maxcso source** cloned as a sibling directory named `maxcso/`, with its submodules initialised:
@@ -28,9 +28,11 @@
 
 ### Option B — MSBuild command line
 
+The solution's platform is **Any CPU** (the C++ bridge produces x64 output regardless). Locate `MSBuild.exe` via `vswhere` so the command is independent of your Visual Studio edition/version:
+
 ```powershell
-$msbuild = "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
-& $msbuild maxcsoGUI.sln /p:Configuration=Release "/p:Platform=x64" /v:minimal
+$msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe"
+& $msbuild maxcsoGUI.sln /p:Configuration=Release "/p:Platform=Any CPU" /v:minimal
 ```
 
 ---

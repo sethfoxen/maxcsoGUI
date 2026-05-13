@@ -1,4 +1,5 @@
 Imports System.IO
+Imports System.Runtime.InteropServices
 Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class maxcsoGUI
@@ -173,11 +174,47 @@ Public Class maxcsoGUI
         Public ReadOnly Property ResultSummary As New List(Of String)
     End Class
 
+    Private Enum TaskbarProgressState
+        NoProgress = 0
+        Indeterminate = 1
+        Normal = 2
+        [Error] = 4
+    End Enum
+
+    <ComImport(), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)>
+    Private Interface ITaskbarList3
+        Sub HrInit()
+        Sub AddTab(hwnd As IntPtr)
+        Sub DeleteTab(hwnd As IntPtr)
+        Sub ActivateTab(hwnd As IntPtr)
+        Sub SetActiveAlt(hwnd As IntPtr)
+        Sub MarkFullscreenWindow(hwnd As IntPtr, <MarshalAs(UnmanagedType.Bool)> fFullscreen As Boolean)
+        Sub SetProgressValue(hwnd As IntPtr, ullCompleted As ULong, ullTotal As ULong)
+        Sub SetProgressState(hwnd As IntPtr, tbpFlags As TaskbarProgressState)
+    End Interface
+
+    <ComImport(), Guid("56FDF344-FD6D-11D0-958A-006097C9A090")>
+    Private Class CTaskbarList
+    End Class
+
+    <DllImport("user32.dll", CharSet:=CharSet.Unicode)>
+    Private Shared Function RegisterWindowMessage(lpString As String) As Integer
+    End Function
+
     Private Shared ReadOnly ProgressPercentPattern As New System.Text.RegularExpressions.Regex("(\d+)%", System.Text.RegularExpressions.RegexOptions.Compiled)
+    Private Shared ReadOnly TaskbarButtonCreatedMessage As Integer = RegisterWindowMessage("TaskbarButtonCreated")
 
     Private _dragFilter As DragCursorMessageFilter
     Private _copyCursor As Cursor = Nothing
     Private _suppressPoolEvents As Boolean = False
+    Private _taskbarList As ITaskbarList3 = Nothing
+    Private _isTaskbarButtonCreated As Boolean = False
+    Private _pendingTaskbarState As TaskbarProgressState = TaskbarProgressState.NoProgress
+    Private _pendingTaskbarCompleted As ULong = 0UL
+    Private _pendingTaskbarTotal As ULong = 100UL
+    Private _lastTaskbarState As Nullable(Of TaskbarProgressState)
+    Private _lastTaskbarCompleted As Nullable(Of ULong)
+    Private _lastTaskbarTotal As Nullable(Of ULong)
 
     Private Function BuildFormatOption(displayName As String, argumentValue As String, outputExtension As String) As FormatOption
         Dim available As New HashSet(Of CompressionAlgo)()
@@ -329,6 +366,18 @@ Public Class maxcsoGUI
 
     Private Sub Form1_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
         Application.RemoveMessageFilter(_dragFilter)
+        If _taskbarList IsNot Nothing Then
+            Marshal.FinalReleaseComObject(_taskbarList)
+            _taskbarList = Nothing
+        End If
+    End Sub
+
+    Protected Overrides Sub OnHandleCreated(e As EventArgs)
+        MyBase.OnHandleCreated(e)
+        _isTaskbarButtonCreated = False
+        _lastTaskbarState = Nothing
+        _lastTaskbarCompleted = Nothing
+        _lastTaskbarTotal = Nothing
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -338,6 +387,11 @@ Public Class maxcsoGUI
             Return
         End If
         MyBase.WndProc(m)
+
+        If m.Msg = TaskbarButtonCreatedMessage Then
+            _isTaskbarButtonCreated = True
+            ApplyPendingTaskbarProgress()
+        End If
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles About.Click
@@ -425,6 +479,7 @@ Public Class maxcsoGUI
 
         SetBusyState(True)
         UpdateProgressSafe(-1, "Preparing conversion...")
+        UpdateTaskbarQueueProgressSafe(0, jobs.Count, 0)
 
         Dim batchResult As ConversionBatchResult = Nothing
 
@@ -433,8 +488,10 @@ Public Class maxcsoGUI
         Catch ex As Exception
             SetBusyState(False)
             UpdateProgressSafe(0, "Conversion failed")
+            UpdateTaskbarQueueProgressSafe(0, jobs.Count, 0, TaskbarProgressState.Error)
             MessageBox.Show("The conversion stopped unexpectedly." & Environment.NewLine & Environment.NewLine & ex.Message, "Conversion Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
             UpdateProgressSafe(0, "Ready")
+            ClearTaskbarProgressSafe()
             Return
         End Try
 
@@ -448,11 +505,14 @@ Public Class maxcsoGUI
 
         If Not batchResult.Success Then
             UpdateProgressSafe(0, "Conversion failed")
+            UpdateTaskbarQueueProgressSafe(batchResult.CompletedCount, jobs.Count, 0, TaskbarProgressState.Error)
             MessageBox.Show(batchResult.FailureMessage, "Conversion Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ClearTaskbarProgressSafe()
             Return
         End If
 
         UpdateProgressSafe(100, "Conversion completed")
+        UpdateTaskbarQueueProgressSafe(jobs.Count, jobs.Count, 0)
 
         If batchResult.ResultSummary.Count > 0 Then
             MessageBox.Show(String.Join(Environment.NewLine & Environment.NewLine, batchResult.ResultSummary), "Completed", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -461,6 +521,7 @@ Public Class maxcsoGUI
         End If
 
         UpdateProgressSafe(0, "Ready")
+        ClearTaskbarProgressSafe()
     End Sub
 
     Private Sub ToolTip1_Popup(sender As Object, e As PopupEventArgs)
@@ -761,16 +822,20 @@ Public Class maxcsoGUI
         Try
             For jobIndex As Integer = 0 To jobs.Count - 1
                 Dim job As ConversionJob = jobs(jobIndex)
-                Dim fileLabel As String = "[" & (jobIndex + 1).ToString() & "/" & jobs.Count.ToString() & "] " & Path.GetFileName(job.InputPath)
+                Dim currentJobIndex As Integer = jobIndex
+                Dim totalJobs As Integer = jobs.Count
+                Dim fileLabel As String = "[" & (currentJobIndex + 1).ToString() & "/" & totalJobs.ToString() & "] " & Path.GetFileName(job.InputPath)
                 Dim failureDetails As String = String.Empty
                 Dim successDetails As String = String.Empty
 
                 UpdateProgressSafe(-1, If(ShouldUseIndeterminateStatus(settings), fileLabel & " - In Progress", fileLabel & " - Starting"))
+                UpdateTaskbarQueueProgressSafe(currentJobIndex, totalJobs, 0)
 
                 Dim nativeRequest As NativeBridgeRequest = BuildNativeRequest(job.InputPath, job.OutputPath, settings)
                 Dim nativeResult As NativeBridgeRunResult = MaxcsoNative.Run(nativeRequest, successDetails, failureDetails,
                     Sub(percent As Integer, message As String)
                         UpdateProgressSafe(percent, fileLabel & " - In Progress", FormatProgressBytes(message))
+                        UpdateTaskbarQueueProgressSafe(currentJobIndex, totalJobs, percent)
                     End Sub)
 
                 Select Case nativeResult
@@ -802,6 +867,7 @@ Public Class maxcsoGUI
                             Sub(percent As Integer, message As String)
                                 Dim progressText As String = fileLabel & " - " & If(String.IsNullOrWhiteSpace(message), "In Progress", message)
                                 UpdateProgressSafe(percent, progressText)
+                                UpdateTaskbarQueueProgressSafe(currentJobIndex, totalJobs, percent)
                             End Sub) Then
                             CleanupFailedOutput(job.OutputPath, settings)
                             result.FailureMessage = BuildFailureMessage(job.InputPath, failureDetails)
@@ -821,6 +887,7 @@ Public Class maxcsoGUI
 
                 result.CompletedCount += 1
                 UpdateProgressSafe(100, fileLabel & " - Completed")
+                UpdateTaskbarQueueProgressSafe(result.CompletedCount, totalJobs, 0)
             Next
         Catch ex As Exception
             result.FailureMessage = "The conversion stopped unexpectedly." & Environment.NewLine & Environment.NewLine & ex.Message
@@ -914,6 +981,111 @@ Public Class maxcsoGUI
         ProgressPercent.Text = normalizedPercent.ToString() & "%"
         ProgressBytes.Text = bytesText
     End Sub
+
+    Private Sub UpdateTaskbarQueueProgressSafe(completedJobs As Integer, totalJobs As Integer, currentJobPercent As Integer, Optional state As TaskbarProgressState = TaskbarProgressState.Normal)
+        If IsDisposed Then
+            Return
+        End If
+
+        If InvokeRequired Then
+            Try
+                BeginInvoke(New Action(Of Integer, Integer, Integer, TaskbarProgressState)(AddressOf UpdateTaskbarQueueProgressSafe), completedJobs, totalJobs, currentJobPercent, state)
+            Catch ex As ObjectDisposedException
+            End Try
+            Return
+        End If
+
+        If totalJobs <= 0 Then
+            SetTaskbarProgressState(TaskbarProgressState.NoProgress)
+            Return
+        End If
+
+        Dim normalizedCompletedJobs As Integer = Math.Max(0, Math.Min(totalJobs, completedJobs))
+        Dim normalizedCurrentPercent As Integer = Math.Max(0, Math.Min(100, currentJobPercent))
+        Dim completedUnits As ULong = CULng((CLng(normalizedCompletedJobs) * 100L) + normalizedCurrentPercent)
+        Dim totalUnits As ULong = CULng(CLng(totalJobs) * 100L)
+
+        If completedUnits > totalUnits Then
+            completedUnits = totalUnits
+        End If
+
+        SetTaskbarProgressValue(state, completedUnits, totalUnits)
+    End Sub
+
+    Private Sub ClearTaskbarProgressSafe()
+        If IsDisposed Then
+            Return
+        End If
+
+        If InvokeRequired Then
+            Try
+                BeginInvoke(New Action(AddressOf ClearTaskbarProgressSafe))
+            Catch ex As ObjectDisposedException
+            End Try
+            Return
+        End If
+
+        SetTaskbarProgressState(TaskbarProgressState.NoProgress)
+    End Sub
+
+    Private Sub SetTaskbarProgressValue(state As TaskbarProgressState, completed As ULong, total As ULong)
+        _pendingTaskbarState = state
+        _pendingTaskbarCompleted = Math.Min(completed, If(total = 0UL, 1UL, total))
+        _pendingTaskbarTotal = If(total = 0UL, 1UL, total)
+        ApplyPendingTaskbarProgress()
+    End Sub
+
+    Private Sub SetTaskbarProgressState(state As TaskbarProgressState)
+        _pendingTaskbarState = state
+        ApplyPendingTaskbarProgress()
+    End Sub
+
+    Private Sub ApplyPendingTaskbarProgress()
+        If Not _isTaskbarButtonCreated OrElse Not IsHandleCreated Then
+            Return
+        End If
+
+        If Not EnsureTaskbarListInitialized() Then
+            Return
+        End If
+
+        Try
+            If Not _lastTaskbarState.HasValue OrElse _lastTaskbarState.Value <> _pendingTaskbarState Then
+                _taskbarList.SetProgressState(Handle, _pendingTaskbarState)
+                _lastTaskbarState = _pendingTaskbarState
+            End If
+
+            If _pendingTaskbarState = TaskbarProgressState.Normal OrElse _pendingTaskbarState = TaskbarProgressState.Error Then
+                If Not _lastTaskbarCompleted.HasValue OrElse
+                    Not _lastTaskbarTotal.HasValue OrElse
+                    _lastTaskbarCompleted.Value <> _pendingTaskbarCompleted OrElse
+                    _lastTaskbarTotal.Value <> _pendingTaskbarTotal Then
+                    _taskbarList.SetProgressValue(Handle, _pendingTaskbarCompleted, _pendingTaskbarTotal)
+                    _lastTaskbarCompleted = _pendingTaskbarCompleted
+                    _lastTaskbarTotal = _pendingTaskbarTotal
+                End If
+            Else
+                _lastTaskbarCompleted = Nothing
+                _lastTaskbarTotal = Nothing
+            End If
+        Catch ex As COMException
+        End Try
+    End Sub
+
+    Private Function EnsureTaskbarListInitialized() As Boolean
+        If _taskbarList IsNot Nothing Then
+            Return True
+        End If
+
+        Try
+            _taskbarList = CType(New CTaskbarList(), ITaskbarList3)
+            _taskbarList.HrInit()
+            Return True
+        Catch ex As COMException
+            _taskbarList = Nothing
+            Return False
+        End Try
+    End Function
 
     Private Function FormatProgressBytes(message As String) As String
         If String.IsNullOrWhiteSpace(message) Then

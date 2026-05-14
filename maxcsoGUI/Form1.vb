@@ -529,7 +529,7 @@ Public Class maxcsoGUI
         UpdateTaskbarQueueProgressSafe(jobs.Count, jobs.Count, 0)
 
         If batchResult.ResultSummary.Count > 0 Then
-            MessageBox.Show(String.Join(Environment.NewLine & Environment.NewLine, batchResult.ResultSummary), "Completed", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show(BuildResultSummaryMessage(batchResult.ResultSummary, settings), "Completed", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             MessageBox.Show("Conversion completed!")
         End If
@@ -1015,7 +1015,7 @@ Public Class maxcsoGUI
 
                 If settings.CrcOnly OrElse settings.MeasureOnly Then
                     If Not String.IsNullOrWhiteSpace(successDetails) Then
-                        Dim summaryLine As String = If(settings.MeasureOnly, FormatMeasureResult(successDetails, job.InputPath), successDetails.Trim())
+                        Dim summaryLine As String = If(settings.MeasureOnly, FormatMeasureResult(successDetails, job.InputPath), FormatCrcResult(successDetails, job.InputPath))
                         result.ResultSummary.Add(summaryLine)
                     End If
                 End If
@@ -1264,6 +1264,28 @@ Public Class maxcsoGUI
         Return Path.GetFileName(inputPath) & Environment.NewLine &
                "  Original:   " & FormatBytes(original) & Environment.NewLine &
                "  Compressed: " & FormatBytes(compressed) & " (" & ratio & "% of original)"
+    End Function
+
+    Private Function FormatCrcResult(rawMessage As String, inputPath As String) As String
+        Dim trimmed As String = If(rawMessage, String.Empty).Trim()
+        Dim crcValue As String = trimmed
+        Dim prefix As String = "CRC32:"
+
+        If trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) Then
+            crcValue = trimmed.Substring(prefix.Length).Trim()
+        End If
+
+        Return Path.GetFileNameWithoutExtension(inputPath) & ":" & Environment.NewLine & crcValue
+    End Function
+
+    Private Function BuildResultSummaryMessage(summaryLines As IEnumerable(Of String), settings As ConversionSettings) As String
+        Dim joinedSummary As String = String.Join(Environment.NewLine & Environment.NewLine, summaryLines)
+
+        If settings.CrcOnly Then
+            Return "=== CRC32 ===" & Environment.NewLine & Environment.NewLine & joinedSummary
+        End If
+
+        Return joinedSummary
     End Function
 
     Private Function FormatBytes(value As Long) As String

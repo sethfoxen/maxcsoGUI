@@ -175,11 +175,17 @@ Public Class maxcsoGUI
         Public Property OutputPath As String
     End Class
 
+    Friend Class CrcResultEntry
+        Public Property Title As String
+        Public Property Crc32 As String
+    End Class
+
     Private Class ConversionBatchResult
         Public Property Success As Boolean
         Public Property FailureMessage As String
         Public Property CompletedCount As Integer
         Public ReadOnly Property ResultSummary As New List(Of String)
+        Public ReadOnly Property CrcResults As New List(Of CrcResultEntry)
     End Class
 
     Private Enum TaskbarProgressState
@@ -528,7 +534,11 @@ Public Class maxcsoGUI
         UpdateProgressSafe(100, "Conversion completed")
         UpdateTaskbarQueueProgressSafe(jobs.Count, jobs.Count, 0)
 
-        If batchResult.ResultSummary.Count > 0 Then
+        If settings.CrcOnly AndAlso batchResult.CrcResults.Count > 0 Then
+            Using resultsDialog As New CrcResultsDialog(batchResult.CrcResults)
+                resultsDialog.ShowDialog(Me)
+            End Using
+        ElseIf batchResult.ResultSummary.Count > 0 Then
             MessageBox.Show(BuildResultSummaryMessage(batchResult.ResultSummary, settings), "Completed", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
             MessageBox.Show("Conversion completed!")
@@ -1017,6 +1027,9 @@ Public Class maxcsoGUI
                     If Not String.IsNullOrWhiteSpace(successDetails) Then
                         Dim summaryLine As String = If(settings.MeasureOnly, FormatMeasureResult(successDetails, job.InputPath), FormatCrcResult(successDetails, job.InputPath))
                         result.ResultSummary.Add(summaryLine)
+                        If settings.CrcOnly Then
+                            result.CrcResults.Add(BuildCrcResultEntry(successDetails, job.InputPath))
+                        End If
                     End If
                 End If
 
@@ -1267,15 +1280,8 @@ Public Class maxcsoGUI
     End Function
 
     Private Function FormatCrcResult(rawMessage As String, inputPath As String) As String
-        Dim trimmed As String = If(rawMessage, String.Empty).Trim()
-        Dim crcValue As String = trimmed
-        Dim prefix As String = "CRC32:"
-
-        If trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) Then
-            crcValue = trimmed.Substring(prefix.Length).Trim()
-        End If
-
-        Return Path.GetFileNameWithoutExtension(inputPath) & ":" & Environment.NewLine & crcValue
+        Dim result As CrcResultEntry = BuildCrcResultEntry(rawMessage, inputPath)
+        Return result.Title & ":" & Environment.NewLine & result.Crc32
     End Function
 
     Private Function BuildResultSummaryMessage(summaryLines As IEnumerable(Of String), settings As ConversionSettings) As String
@@ -1286,6 +1292,21 @@ Public Class maxcsoGUI
         End If
 
         Return joinedSummary
+    End Function
+
+    Private Function BuildCrcResultEntry(rawMessage As String, inputPath As String) As CrcResultEntry
+        Dim trimmed As String = If(rawMessage, String.Empty).Trim()
+        Dim crcValue As String = trimmed
+        Dim prefix As String = "CRC32:"
+
+        If trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) Then
+            crcValue = trimmed.Substring(prefix.Length).Trim()
+        End If
+
+        Return New CrcResultEntry() With {
+            .Title = Path.GetFileNameWithoutExtension(inputPath),
+            .Crc32 = crcValue
+        }
     End Function
 
     Private Function FormatBytes(value As Long) As String
@@ -1503,6 +1524,109 @@ Public Class maxcsoGUI
 
     Private Function QuoteArgument(value As String) As String
         Return """" & value & """"
+    End Function
+End Class
+
+Friend Class CrcResultsDialog
+    Inherits Form
+
+    Private ReadOnly _entries As List(Of maxcsoGUI.CrcResultEntry)
+
+    Public Sub New(entries As IEnumerable(Of maxcsoGUI.CrcResultEntry))
+        _entries = New List(Of maxcsoGUI.CrcResultEntry)(entries)
+
+        Text = "Completed"
+        StartPosition = FormStartPosition.CenterParent
+        FormBorderStyle = FormBorderStyle.FixedDialog
+        MaximizeBox = False
+        MinimizeBox = False
+        ShowInTaskbar = False
+        ClientSize = New Size(460, 320)
+
+        Dim resultsBox As New System.Windows.Forms.TextBox() With {
+            .Dock = DockStyle.Fill,
+            .Multiline = True,
+            .ReadOnly = True,
+            .ScrollBars = ScrollBars.Vertical,
+            .WordWrap = False,
+            .Font = New Font("Consolas", 10.0F),
+            .Text = BuildDisplayText()
+        }
+
+        Dim buttonPanel As New FlowLayoutPanel() With {
+            .Dock = DockStyle.Bottom,
+            .FlowDirection = FlowDirection.RightToLeft,
+            .Padding = New Padding(12),
+            .AutoSize = True,
+            .WrapContents = False
+        }
+
+        Dim okButton As New System.Windows.Forms.Button() With {
+            .Text = "OK",
+            .DialogResult = DialogResult.OK,
+            .AutoSize = True
+        }
+
+        Dim copyButton As New System.Windows.Forms.Button() With {
+            .Text = "Copy CSV",
+            .AutoSize = True
+        }
+
+        AddHandler copyButton.Click, AddressOf CopyButton_Click
+
+        buttonPanel.Controls.Add(okButton)
+        buttonPanel.Controls.Add(copyButton)
+
+        Controls.Add(resultsBox)
+        Controls.Add(buttonPanel)
+
+        AcceptButton = okButton
+        CancelButton = okButton
+    End Sub
+
+    Private Function BuildDisplayText() As String
+        Dim sections As New List(Of String) From {
+            "=== CRC32 ==="
+        }
+
+        For Each entry As maxcsoGUI.CrcResultEntry In _entries
+            sections.Add(entry.Title & ":" & Environment.NewLine & entry.Crc32)
+        Next
+
+        Return String.Join(Environment.NewLine & Environment.NewLine, sections)
+    End Function
+
+    Private Function BuildCsvText() As String
+        Dim lines As New List(Of String) From {
+            "Title,CRC32"
+        }
+
+        For Each entry As maxcsoGUI.CrcResultEntry In _entries
+            lines.Add(EscapeCsv(entry.Title) & "," & EscapeCsv(entry.Crc32))
+        Next
+
+        Return String.Join(Environment.NewLine, lines)
+    End Function
+
+    Private Sub CopyButton_Click(sender As Object, e As EventArgs)
+        Try
+            Clipboard.SetText(BuildCsvText())
+        Catch ex As Exception
+            MessageBox.Show(Me, "Couldn't copy the CRC32 CSV to the clipboard." & Environment.NewLine & Environment.NewLine & ex.Message, "Copy Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Function EscapeCsv(value As String) As String
+        Dim safeValue As String = If(value, String.Empty)
+        If safeValue.Contains("""") Then
+            safeValue = safeValue.Replace("""", """""")
+        End If
+
+        If safeValue.IndexOfAny(New Char() {","c, """"c, ControlChars.Cr, ControlChars.Lf}) >= 0 Then
+            safeValue = """" & safeValue & """"
+        End If
+
+        Return safeValue
     End Function
 End Class
 

@@ -62,6 +62,14 @@ Public Class maxcsoGUI
         CompressionAlgo.Lz4, CompressionAlgo.Lz4Brute
     }
 
+    Private Shared ReadOnly CompressDropExtensions As HashSet(Of String) = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase) From {
+        ".iso"
+    }
+
+    Private Shared ReadOnly DecompressDropExtensions As HashSet(Of String) = New HashSet(Of String)(StringComparer.OrdinalIgnoreCase) From {
+        ".cso", ".zso", ".dax"
+    }
+
     Private Class FormatOption
         Private ReadOnly displayName_ As String
         Private ReadOnly argumentValue_ As String
@@ -545,9 +553,7 @@ Public Class maxcsoGUI
     Private Sub Form1_DragDrop(sender As Object, e As DragEventArgs) Handles MyBase.DragDrop
         DragCursorMessageFilter.IsDragActive = False
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            For Each path As String In DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
-                FileList.Items.Add(path)
-            Next
+            AddDroppedPaths(DirectCast(e.Data.GetData(DataFormats.FileDrop), String()))
         End If
     End Sub
 
@@ -576,11 +582,57 @@ Public Class maxcsoGUI
         DragCursorMessageFilter.IsDragActive = False
         FileList.BackColor = SystemColors.Window
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
-            For Each path As String In DirectCast(e.Data.GetData(DataFormats.FileDrop), String())
-                FileList.Items.Add(path)
-            Next
+            AddDroppedPaths(DirectCast(e.Data.GetData(DataFormats.FileDrop), String()))
         End If
     End Sub
+
+    Private Sub AddDroppedPaths(paths As IEnumerable(Of String))
+        If paths Is Nothing Then
+            Return
+        End If
+
+        Dim allowedExtensions As HashSet(Of String) = If(IsDecompressModeSelected(), DecompressDropExtensions, CompressDropExtensions)
+        Dim existingPaths As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
+        Dim acceptedPaths As New List(Of String)()
+        Dim filteredCount As Integer = 0
+
+        For Each existingItem As Object In FileList.Items
+            Dim existingPath As String = TryCast(existingItem, String)
+            If Not String.IsNullOrWhiteSpace(existingPath) Then
+                existingPaths.Add(existingPath)
+            End If
+        Next
+
+        For Each droppedPath As String In paths
+            Dim extension As String = System.IO.Path.GetExtension(droppedPath)
+            If allowedExtensions.Contains(extension) AndAlso Not existingPaths.Contains(droppedPath) Then
+                acceptedPaths.Add(droppedPath)
+                existingPaths.Add(droppedPath)
+            Else
+                If Not allowedExtensions.Contains(extension) Then
+                    filteredCount += 1
+                End If
+            End If
+        Next
+
+        For Each acceptedPath As String In acceptedPaths
+            FileList.Items.Add(acceptedPath)
+        Next
+
+        If filteredCount > 0 Then
+            MessageBox.Show(BuildFilteredDropMessage(filteredCount), "Unsupported Files Filtered", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
+    End Sub
+
+    Private Function BuildFilteredDropMessage(filteredCount As Integer) As String
+        If IsDecompressModeSelected() Then
+            Return filteredCount.ToString() & " dropped item" & If(filteredCount = 1, " was", "s were") &
+                   " filtered out because Decompress mode only accepts .cso, .zso, and .dax files."
+        End If
+
+        Return filteredCount.ToString() & " dropped item" & If(filteredCount = 1, " was", "s were") &
+               " filtered out because Compress mode only accepts .iso files."
+    End Function
 
     Private Sub FileList_DragLeave(sender As Object, e As EventArgs) Handles FileList.DragLeave
         FileList.BackColor = SystemColors.Window
@@ -723,6 +775,10 @@ Public Class maxcsoGUI
     End Sub
 
     Private Sub ModeSelection_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ModeSelection.SelectedIndexChanged
+        If FileList.Items.Count > 0 Then
+            FileList.Items.Clear()
+        End If
+
         UpdateCompressionOptionState()
     End Sub
 
@@ -782,6 +838,17 @@ Public Class maxcsoGUI
     Private Sub UpdateCompressionOptionState()
         Dim selectedFormat As FormatOption = TryCast(FormatSelection.SelectedItem, FormatOption)
         Dim isDecompressMode As Boolean = IsDecompressModeSelected()
+
+        If isDecompressMode Then
+            If CrcOnly.Checked Then
+                CrcOnly.Checked = False
+            End If
+
+            If MeasureOnly.Checked Then
+                MeasureOnly.Checked = False
+            End If
+        End If
+
         Dim supportsAltBlockSize As Boolean = selectedFormat Is Nothing OrElse selectedFormat.SupportsAltBlockSize
         Dim isReadOnlyMode As Boolean = CrcOnly.Checked OrElse MeasureOnly.Checked
         Dim trialPoolDisabled As Boolean = isDecompressMode OrElse CrcOnly.Checked
@@ -839,16 +906,13 @@ Public Class maxcsoGUI
             CustDir.Checked = False
         End If
 
-        If isReadOnlyMode AndAlso isDecompressMode AndAlso ModeSelection.Items.Count > 0 Then
-            ModeSelection.SelectedIndex = 0
-            isDecompressMode = False
-        End If
-
         FormatSelection.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked
         Fast.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked
         BlockSize.Enabled = Not isDecompressMode AndAlso Not CrcOnly.Checked AndAlso supportsAltBlockSize
         BlockText.Enabled = BlockSize.Enabled AndAlso BlockSize.Checked
         ModeSelection.Enabled = Not isReadOnlyMode
+        CrcOnly.Enabled = Not isDecompressMode
+        MeasureOnly.Enabled = Not isDecompressMode
         DeleteCheck.Enabled = Not isReadOnlyMode
         CustDir.Enabled = Not isReadOnlyMode
         Browse.Enabled = CustDir.Checked AndAlso CustDir.Enabled

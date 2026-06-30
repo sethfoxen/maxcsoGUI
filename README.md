@@ -1,5 +1,5 @@
 # maxcsoGUI
-A Windows GUI for maxcso.
+A Windows GUI for maxcso. [Download here](https://github.com/sethfoxen/maxcsoGUI/releases/latest).
 
 <img width="1688" height="612" alt="Image" src="https://github.com/user-attachments/assets/6d0a8ec5-2044-4b60-b1a0-1a93269a462c" />
 <br><br>

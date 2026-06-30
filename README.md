@@ -1,7 +1,16 @@
 # maxcsoGUI
-A simple GUI for maxcso.
+A Windows GUI for maxcso.
 
-maxcso uses great compression for ISO files, but is commandline only. This program fixes that.
-Simply copy the "maxcso.exe" file to the same directory as "maxcsoGUI" and run maxcsoGUI. Tested to work also with "maxcso32.exe," just rename it to "maxcso.exe"
+<img width="1688" height="612" alt="Image" src="https://github.com/user-attachments/assets/6d0a8ec5-2044-4b60-b1a0-1a93269a462c" />
+<br><br>
+maxcso is a Command Line tool that dynamically uses high-quality compression algorithms to shrink (primarily) PSP & PS2 ISO files into a variety of different resulting formats. This program adds a GUI layer on top of it for easier use.
+This branch's <a href="https://github.com/wad11656/maxcsoGUI/releases/latest">Release</a> provides a standalone executable that is pre-bundled with the original <code>maxcso.exe</code> program.
+<br><br>
+This GUI version replicates all available flags/options available in the original Command Line <code>maxcso.exe</code> program, including:
 
-Thanks to unknownbrackets for maxcso https://github.com/unknownbrackets/maxcso
+- Thread count selection (which now defaults to the maximum available, like the original Command Line app).
+- All available Output formats (`cso1`, `cso2`, `zso`, `dax`).
+- Enable/disable all available algorithms in the Compression Algorithms Trial Pool.
+- Options for fast mode, alternate block size, decompression, CRC32, measure-only runs, cost tuning, and custom output directory.
+
+Thanks to unknownbrackets for maxcso: https://github.com/unknownbrackets/maxcso

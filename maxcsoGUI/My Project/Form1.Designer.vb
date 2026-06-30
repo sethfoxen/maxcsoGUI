@@ -193,8 +193,8 @@ Partial Class maxcsoGUI
         Me.DropHelp.Name = "DropHelp"
         Me.DropHelp.Size = New System.Drawing.Size(448, 24)
         Me.DropHelp.TabIndex = 5
-        Me.DropHelp.Text = "Drag and drop ISO files to this box, the CSO files will be produced in the same d" &
-    "irectory as the ISO unless the Custom Output Dir box is checked."
+        Me.DropHelp.Text = "Drag and drop ISO files to this box. The output files will be produced in the same " &
+    "directory as the ISO unless the Custom Output Dir box is checked."
         Me.DropHelp.UseCompatibleTextRendering = True
         '
         'Convert
